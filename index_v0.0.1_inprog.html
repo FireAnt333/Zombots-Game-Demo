@@ -10,8 +10,8 @@
     <p>This build is in development.</p>
 
     <div id="container">
-      <canvas class="canvas" id="canvasMain" width="960" height="640"></canvas>
-      <canvas class="canvas" id="canvasUpscale" width="240" height="160"></canvas>
+      <canvas class="canvas" id="canvasMain" width="960" height="640" oncontextmenu="return false;"></canvas>
+      <canvas class="canvas" id="canvasUpscale" width="240" height="160" oncontextmenu="return false;"></canvas>
     </div>
 
     <table>
@@ -44,9 +44,39 @@
           <p>Build</p>
         </td>
       </tr>
+      <tr>
+        <td>
+          <p>Z</p>
+        </td>
+        <td>
+          <p>Spawn Enemy (TEMP)</p>
+        </td>
+      </tr>
     </table>
 
-    <script src="main_v0.0.1_inprog.js"></script>
-
   </body>
+
+  <!--
+  <script type="module" src="./f1.js"></script>
+  <script type="module" src="./f2.js"></script>
+
+  <script type="module" src="./main_v0.0.1_inprog.js"></script>
+  <script type="module" src="./data/data_chassis.js"></script>
+  <script type="module" src="./data/data_enemies.js"></script>
+  <script type="module" src="./data/data_levels.js"></script>
+  <script type="module" src="./data/data_ui.js"></script>
+  <script type="module" src="./data/data_utilities.js"></script>
+  <script type="module" src="./data/data_weapons.js"></script>
+  -->
+
+  <script src="./data/data_chassis.js"></script>
+  <script src="./data/data_enemies.js"></script>
+  <script src="./data/data_levels.js"></script>
+  <script src="./data/data_player.js"></script>
+  <script src="./data/data_ui.js"></script>
+  <script src="./data/data_utilities.js"></script>
+  <script src="./data/data_weapons.js"></script>
+  
+  <script src="./main_v0.0.1_inprog.js"></script>
+
 </html>
