@@ -45,8 +45,10 @@ const canvasHeight = 640; // 160 on downscaled canvas
 //const playAreaWidth = playAreaBorderRight - playAreaBorderLeft;
 //const playAreaHeight = playAreaBorderBottom - playAreaBorderTop;
 
-const cameraOffset = {x: canvasWidth/upscaleFactor/2, // 120
-                      y: ((canvasHeight/upscaleFactor)-20) / 2} ; // 70
+//const cameraOffset = {x: canvasWidth/upscaleFactor/2, // 120
+//                      y: ((canvasHeight/upscaleFactor)-20) / 2} ; // 70
+const cameraOffset = {x: 120, // 240
+                      y: 70}; // 140
 //const cameraOffsetX = (canvasWidth/upscaleFactor/2); // 120
 //const cameraOffsetY = (((canvasHeight/upscaleFactor)-20) / 2); // 70
 //let cameraPosition = {x:0, y:0};
@@ -76,10 +78,14 @@ const gs = {
     mouseDown: false,
     playArea: {
       border: {
-        left: 200 / upscaleFactor, 
-        right: 760 / upscaleFactor, 
-        top: 0 / upscaleFactor, 
-        bottom: 560 / upscaleFactor
+        //left: 200 / upscaleFactor, 
+        //right: 760 / upscaleFactor, 
+        //top: 0 / upscaleFactor, 
+        //bottom: 560 / upscaleFactor
+        left: 50, 
+        right: 240, 
+        top: 0, 
+        bottom: 140
       },
       height: (760 / upscaleFactor) - (200 / upscaleFactor),
       width: (560 / upscaleFactor) - (0 / upscaleFactor)
@@ -110,19 +116,22 @@ function loadScene(page) {
   if (page === 'start') { // load start menu UI/buttons
     gs.gd.currentScene = 'start';
     gs.gd.UICS = [uiData.sections.startBackground, uiData.sections.startMain];
-  } else if (page === 'depot') { // load depot UI/buttons
-    gs.gd.currentScene = 'depot';
-    gs.gd.UICS = [uiData.sections.menuBackground, uiData.sections.topMain, uiData.sections.leftDepot, uiData.sections.rightMain, uiData.sections.bottomDialogueBox, uiData.sections.midDepotMain];
+  } else if (page === 'depotHome') { // load depot home artwork and main button array
+    gs.gd.currentScene = 'depotHome';
+    gs.gd.UICS = [uiData.sections.topMain, uiData.sections.midDepotHome];
+  } else if (page === 'depotLoadouts') { // load depot UI/buttons
+    gs.gd.currentScene = 'depotLoadouts';
+    gs.gd.UICS = [uiData.sections.menuBackground, uiData.sections.topMain, uiData.sections.leftDepotLoadouts, uiData.sections.rightResourceDisplay, uiData.sections.midDepotLoadouts];
   } else if (page === 'depotEditor') { // load depot editor mode UI/buttons
     // Add editor buttons to the UICurrentElementsRight sectional array to be displayed
     gs.gd.currentScene = 'depotEditor';
-    gs.gd.UICS = [uiData.sections.menuBackground, uiData.sections.topMain, uiData.sections.leftTechTreeCategories, uiData.sections.rightMain, uiData.sections.rightDepotEditor, uiData.sections.bottomDialogueBox, uiData.sections.midDepotEditor];
+    gs.gd.UICS = [uiData.sections.menuBackground, uiData.sections.topMain, uiData.sections.leftTechTreeCategories, uiData.sections.rightResourceDisplay, uiData.sections.rightDepotEditor, uiData.sections.midDepotEditor];
   } else if (page === 'levelSelect') { // load level select UI/buttons
     gs.gd.currentScene = 'levelSelect';
-    gs.gd.UICS = [uiData.sections.menuBackground, uiData.sections.topMain, uiData.sections.leftLevelModeSelect, uiData.sections.rightMain, uiData.sections.bottomDialogueBox, uiData.sections.midLevelSelect];
-  } else if (page === 'techTree') { // load tech tree UI/buttons
-    gs.gd.currentScene = 'techTree';
-    gs.gd.UICS = [uiData.sections.menuBackground, uiData.sections.topMain, uiData.sections.leftTechTreeCategories, uiData.sections.rightMain, uiData.sections.bottomDialogueBox];
+    gs.gd.UICS = [uiData.sections.menuBackground, uiData.sections.topMain, uiData.sections.leftLevelModeSelect, uiData.sections.rightResourceDisplay, uiData.sections.midLevelSelect];
+  } else if (page === 'labArmory') { // load tech tree UI/buttons
+    gs.gd.currentScene = 'labArmory';
+    gs.gd.UICS = [uiData.sections.menuBackground, uiData.sections.topMain, uiData.sections.leftTechTreeCategories, uiData.sections.rightResourceDisplay];
   } else if (page === 'gameLevel') { // load level UI/buttons
     gs.gd.currentScene = 'gameLevel';
     gs.gd.UICS = [uiData.sections.menuBackground, uiData.sections.topGameLevel, uiData.sections.bottomGameLevel, uiData.sections.leftGameLevel, uiData.sections.rightGameLevel];
@@ -451,6 +460,7 @@ function drawUIArt() {
   for (let i = 0; i < gs.gd.UICS.length; i++) { // For each UI section to be displayed
     for (let j = 0; j < gs.gd.UICS[i].length; j++) { // For each element in the section to be displayed
       cu.drawImage(gs.gd.UICS[i][j].img, gs.gd.UICS[i][j].uOrigin[0], gs.gd.UICS[i][j].uOrigin[1], gs.gd.UICS[i][j].uWidth, gs.gd.UICS[i][j].uHeight); // Draw the UI element
+      //console.log(`Drew: ${gs.gd.UICS[i][j].name}`);
     }
   }
   

@@ -13,7 +13,7 @@ TO DO:
 
 //import { cd, gs, loadScene, btnActionLo } from '../main_v0.0.1_inprog.js';
 //import { testFunct } from '../main_v0.0.1_inprog.js';
-const upscaleFactor = 4;
+const upscaleFactor = 2;
 
 
 class UIElement {
