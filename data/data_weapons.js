@@ -262,9 +262,9 @@ class MCG10 {
     this.width = 16;
     this.height = 16;
 
-    this.iconSrcRed = 'resources/images/ui_480x320/icons/Icon_Weapon_MachineGun_RED_16x16.png';
-    this.iconSrcGreen = 'resources/images/ui_480x320/icons/Icon_Weapon_MachineGun_GREEN_16x16.png';
-    this.iconSrcPurple = 'resources/images/ui_480x320/icons/Icon_Weapon_MachineGun_PURPLE_16x16.png';
+    this.iconSrcRed = 'resources/images/ui_480x320/Icons/Icon_Weapon_MachineGun_RED_16x16.png';
+    this.iconSrcGreen = 'resources/images/ui_480x320/Icons/Icon_Weapon_MachineGun_GREEN_16x16.png';
+    this.iconSrcPurple = 'resources/images/ui_480x320/Icons/Icon_Weapon_MachineGun_PURPLE_16x16.png';
     this.iconSrcPrimary = this.iconSrcRed;
     this.nameImgSrc = 'resources/images/ui_480x320/Text/ItemName_10-MCG_53x18.png';
 
@@ -504,9 +504,9 @@ class MCG20 {
     this.type = 'Ballistic';
     this.class = 'Machine Gun';
 
-    this.iconSrcRed = 'resources/images/ui_480x320/icons/Icon_Weapon_MachineGun_RED_16x16.png';
-    this.iconSrcGreen = 'resources/images/ui_480x320/icons/Icon_Weapon_MachineGun_GREEN_16x16.png';
-    this.iconSrcPurple = 'resources/images/ui_480x320/icons/Icon_Weapon_MachineGun_PURPLE_16x16.png';
+    this.iconSrcRed = 'resources/images/ui_480x320/Icons/Icon_Weapon_MachineGun_RED_16x16.png';
+    this.iconSrcGreen = 'resources/images/ui_480x320/Icons/Icon_Weapon_MachineGun_GREEN_16x16.png';
+    this.iconSrcPurple = 'resources/images/ui_480x320/Icons/Icon_Weapon_MachineGun_PURPLE_16x16.png';
     this.iconSrcPrimary = this.iconSrcRed;
     this.nameImgSrc = 'resources/images/ui_480x320/Text/ItemName_20-MCG_53x18.png';
   }
@@ -519,9 +519,9 @@ class MCG30 {
     this.type = 'Ballistic';
     this.class = 'Machine Gun';
 
-    this.iconSrcRed = 'resources/images/ui_480x320/icons/Icon_Weapon_MachineGun_RED_16x16.png';
-    this.iconSrcGreen = 'resources/images/ui_480x320/icons/Icon_Weapon_MachineGun_GREEN_16x16.png';
-    this.iconSrcPurple = 'resources/images/ui_480x320/icons/Icon_Weapon_MachineGun_PURPLE_16x16.png';
+    this.iconSrcRed = 'resources/images/ui_480x320/Icons/Icon_Weapon_MachineGun_RED_16x16.png';
+    this.iconSrcGreen = 'resources/images/ui_480x320/Icons/Icon_Weapon_MachineGun_GREEN_16x16.png';
+    this.iconSrcPurple = 'resources/images/ui_480x320/Icons/Icon_Weapon_MachineGun_PURPLE_16x16.png';
     this.iconSrcPrimary = this.iconSrcRed;
     this.nameImgSrc = 'resources/images/ui_480x320/Text/ItemName_30-MCG_53x18.png';
   }
@@ -534,9 +534,9 @@ class CAN60 {
     this.type = 'Ballistic';
     this.class = 'Cannon';
 
-    this.iconSrcRed = 'resources/images/ui_480x320/icons/Icon_Weapon_Cannon_RED_16x16.png';
-    this.iconSrcGreen = 'resources/images/ui_480x320/icons/Icon_Weapon_Cannon_GREEN_16x16.png';
-    this.iconSrcPurple = 'resources/images/ui_480x320/icons/Icon_Weapon_Cannon_PURPLE_16x16.png';
+    this.iconSrcRed = 'resources/images/ui_480x320/Icons/Icon_Weapon_Cannon_RED_16x16.png';
+    this.iconSrcGreen = 'resources/images/ui_480x320/Icons/Icon_Weapon_Cannon_GREEN_16x16.png';
+    this.iconSrcPurple = 'resources/images/ui_480x320/Icons/Icon_Weapon_Cannon_PURPLE_16x16.png';
     this.iconSrcPrimary = this.iconSrcRed;
     this.nameImgSrc = 'resources/images/ui_480x320/Text/ItemName_60-CAN_53x18.png';
   }

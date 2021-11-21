@@ -170,7 +170,7 @@ class ChassisWheeled extends Base {
     this.type = 'Chassis';
     this.class = 'Wheeled';
 
-    this.iconSrc = 'resources/images/ui_480x320/icons/Icon_Chassis_Wheeled_1_16x16.png';
+    this.iconSrc = 'resources/images/ui_480x320/Icons/Icon_Chassis_Wheeled_1_16x16.png';
     this.nameImgSrc = 'resources/images/ui_480x320/Text/ChassisName_200-WHL_53x18.png';
   }
 }
@@ -202,7 +202,7 @@ class ChassisTracked extends Base {
     this.type = 'Chassis';
     this.class = 'Tracked';
 
-    this.iconSrc = 'resources/images/ui_480x320/icons/Icon_Chassis_Tracked_1_16x16.png';
+    this.iconSrc = 'resources/images/ui_480x320/Icons/Icon_Chassis_Tracked_1_16x16.png';
     this.nameImgSrc = 'resources/images/ui_480x320/Text/ChassisName_300-TRK_53x18.png';
   }
 }
@@ -234,7 +234,7 @@ class StaticWeaponFrame extends Base {
     this.type = 'Building';
     this.class = 'Static Weapon Frame';
 
-    this.iconSrc = 'resources/images/ui_480x320/icons/Icon_Building_WeaponFrame_GREEN_16x16.png';
+    this.iconSrc = 'resources/images/ui_480x320/Icons/Icon_Building_WeaponFrame_GREEN_16x16.png';
     this.nameImgSrc = 'resources/images/ui_480x320/Text/BuildingName_40-SWF_53x18.png';
   }
 }
