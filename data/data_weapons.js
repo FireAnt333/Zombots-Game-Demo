@@ -253,13 +253,21 @@ CI = Calculated Input (based on direct inputs)
 */
 
 // name, wt, sps, shotReload, ivi, rampUp, shotsPerMag, magReload, baseSpread, maxSpread, spreadPerShot, spreadDecay, ammoTypes [ammoNameShort, ammoNameFull, description, pps, damage, damageVariance, damageType, splashDamage, splashRange, penetration, optRange, minRange, maxRange, projectileSpeed, spreadMultiplier], imgSrc, centerOfRotation, position, angle
+
+// 11/12/21: Constructor takes in 10 values indicating mods, true/false/null, true for active mod slot, false for inactive mod slot, null for a slot with no mods available (used for items with less than 10 possible mods)
 class MCG10 {
   constructor() {
     this.img = new Image();
     this.img.src = 'resources/images/sprites/weapons/Player_Gun_16x16.png';
-    //this.img.src = 'resources/images/sprites/weapons/Bullet1_8x8.png';
     this.width = 16;
     this.height = 16;
+
+    this.iconSrcRed = 'resources/images/ui_480x320/icons/Icon_Weapon_MachineGun_RED_16x16.png';
+    this.iconSrcGreen = 'resources/images/ui_480x320/icons/Icon_Weapon_MachineGun_GREEN_16x16.png';
+    this.iconSrcPurple = 'resources/images/ui_480x320/icons/Icon_Weapon_MachineGun_PURPLE_16x16.png';
+    this.iconSrcPrimary = this.iconSrcRed;
+    this.nameImgSrc = 'resources/images/ui_480x320/Text/ItemName_10-MCG_53x18.png';
+
     this.collisionIgnoreList = ['player'];
 
     this.position = {x:0, y:0};
@@ -489,8 +497,50 @@ class MCG10 {
   }
 };
 
+class MCG20 {
+  constructor() {
+    this.name = '20-MCG (Placeholder)';
+    this.wt = 20; // Weight
+    this.type = 'Ballistic';
+    this.class = 'Machine Gun';
 
+    this.iconSrcRed = 'resources/images/ui_480x320/icons/Icon_Weapon_MachineGun_RED_16x16.png';
+    this.iconSrcGreen = 'resources/images/ui_480x320/icons/Icon_Weapon_MachineGun_GREEN_16x16.png';
+    this.iconSrcPurple = 'resources/images/ui_480x320/icons/Icon_Weapon_MachineGun_PURPLE_16x16.png';
+    this.iconSrcPrimary = this.iconSrcRed;
+    this.nameImgSrc = 'resources/images/ui_480x320/Text/ItemName_20-MCG_53x18.png';
+  }
+};
 
+class MCG30 {
+  constructor() {
+    this.name = '30-MCG (Placeholder)';
+    this.wt = 30; // Weight
+    this.type = 'Ballistic';
+    this.class = 'Machine Gun';
+
+    this.iconSrcRed = 'resources/images/ui_480x320/icons/Icon_Weapon_MachineGun_RED_16x16.png';
+    this.iconSrcGreen = 'resources/images/ui_480x320/icons/Icon_Weapon_MachineGun_GREEN_16x16.png';
+    this.iconSrcPurple = 'resources/images/ui_480x320/icons/Icon_Weapon_MachineGun_PURPLE_16x16.png';
+    this.iconSrcPrimary = this.iconSrcRed;
+    this.nameImgSrc = 'resources/images/ui_480x320/Text/ItemName_30-MCG_53x18.png';
+  }
+};
+
+class CAN60 {
+  constructor() {
+    this.name = '60-CAN (Placeholder)';
+    this.wt = 60; // Weight
+    this.type = 'Ballistic';
+    this.class = 'Cannon';
+
+    this.iconSrcRed = 'resources/images/ui_480x320/icons/Icon_Weapon_Cannon_RED_16x16.png';
+    this.iconSrcGreen = 'resources/images/ui_480x320/icons/Icon_Weapon_Cannon_GREEN_16x16.png';
+    this.iconSrcPurple = 'resources/images/ui_480x320/icons/Icon_Weapon_Cannon_PURPLE_16x16.png';
+    this.iconSrcPrimary = this.iconSrcRed;
+    this.nameImgSrc = 'resources/images/ui_480x320/Text/ItemName_60-CAN_53x18.png';
+  }
+};
 
 /* UNIVERSAL PROJECTILE CLASS
 This class creates Projectile objects of many different varieties depending on the inputs passed to it by different weapons firing (creating) their various projectiles.

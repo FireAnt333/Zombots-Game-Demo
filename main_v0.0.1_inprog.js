@@ -1,13 +1,13 @@
 /*
-
 ZOMBOTS DEMO V0.0.1 - In Progress
 
-VERSION 0.0.1 REQUIREMENTS (first demo release): 
-- Game loads to start screen
-- All menus are navigable, with placeholders in place of more complicated features (levels, tech tree, loadout editor, etc.)
+// Git local repository directory path: cd Desktop/'Ideas and Plans'/Career/'Coding Projects'/'Personal Projects'/Zombots/'Zombots Canvas Project'
+1) git add .
+2) git commit -m ""
+3) git push -u origin master
+
 
 TO DO: 
-- Redo art at 4x scale (keep 8x8 tile scale for outlines, but display 32x32 versions)
 - Implement cell-based collision pre-check to improve performance 
     (http://buildnewgames.com/broad-phase-collision-detection/)
 - Add enemy functionality
@@ -53,14 +53,11 @@ const cameraOffset = {x: 120, // 240
 //const cameraOffsetY = (((canvasHeight/upscaleFactor)-20) / 2); // 70
 //let cameraPosition = {x:0, y:0};
 
+// MOVE THESE DEFINITIONS AND ALL REFERENCES TO GS OBJECT
 let firstClick = true;
-
 let gamePaused = false;
 let lastButtonAction = '';
 
-//let currentScene = 'clickToStart';
-//let UICS = [];
-//let currentButtons = [];
 
 // --------------------------------------------------
 //                GAME STATE OBJECT
@@ -91,9 +88,13 @@ const gs = {
       width: (560 / upscaleFactor) - (0 / upscaleFactor)
     },
     objIDIndex: 0,
+
+    loadoutLibrary: [whl200stock, trk300stock],
+    loadoutsToDisplay: [],
     
   }, 
   lm: { // level management
+    level: null,
     tols: 0, // Time Of Level Start
     gamePaused: false,
     cameraPosition: {x:0, y:0},
@@ -121,17 +122,17 @@ function loadScene(page) {
     gs.gd.UICS = [uiData.sections.topMain, uiData.sections.midDepotHome];
   } else if (page === 'depotLoadouts') { // load depot UI/buttons
     gs.gd.currentScene = 'depotLoadouts';
-    gs.gd.UICS = [uiData.sections.menuBackground, uiData.sections.topMain, uiData.sections.leftDepotLoadouts, uiData.sections.rightResourceDisplay, uiData.sections.midDepotLoadouts];
+    gs.gd.UICS = [uiData.sections.menuBackground, uiData.sections.topMain, uiData.sections.leftDepotLoadouts, uiData.sections.rightResourceDisplay, uiData.sections.midDepotLoadouts, uiData.sections.loadoutCardTest, uiData.sections.loadoutCardTest2, uiData.sections.loadoutCardTest3];
   } else if (page === 'depotEditor') { // load depot editor mode UI/buttons
     // Add editor buttons to the UICurrentElementsRight sectional array to be displayed
     gs.gd.currentScene = 'depotEditor';
     gs.gd.UICS = [uiData.sections.menuBackground, uiData.sections.topMain, uiData.sections.leftTechTreeCategories, uiData.sections.rightResourceDisplay, uiData.sections.rightDepotEditor, uiData.sections.midDepotEditor];
   } else if (page === 'levelSelect') { // load level select UI/buttons
     gs.gd.currentScene = 'levelSelect';
-    gs.gd.UICS = [uiData.sections.menuBackground, uiData.sections.topMain, uiData.sections.leftLevelModeSelect, uiData.sections.rightResourceDisplay, uiData.sections.midLevelSelect];
+    gs.gd.UICS = [uiData.sections.menuBackground, uiData.sections.topMain, uiData.sections.rightResourceDisplay]; // used to include now-unused sections: uiData.sections.leftLevelModeSelect, uiData.sections.midLevelSelect
   } else if (page === 'labArmory') { // load tech tree UI/buttons
     gs.gd.currentScene = 'labArmory';
-    gs.gd.UICS = [uiData.sections.menuBackground, uiData.sections.topMain, uiData.sections.leftTechTreeCategories, uiData.sections.rightResourceDisplay];
+    gs.gd.UICS = [uiData.sections.menuBackground, uiData.sections.topMain, uiData.sections.rightResourceDisplay, uiData.sections.itemCardTest]; // used to include now-unused section: uiData.sections.leftTechTreeCategories
   } else if (page === 'gameLevel') { // load level UI/buttons
     gs.gd.currentScene = 'gameLevel';
     gs.gd.UICS = [uiData.sections.menuBackground, uiData.sections.topGameLevel, uiData.sections.bottomGameLevel, uiData.sections.leftGameLevel, uiData.sections.rightGameLevel];
@@ -145,9 +146,12 @@ function loadScene(page) {
 
   // STEP 3: Add clickable UI elements to the currentButtons array
   for (let i = 0; i < gs.gd.UICS.length; i++) { // For each UI section to be displayed
-    for (let j = 0; j < gs.gd.UICS[i].length; j++) { // For each element in the section to be displayed
-      if (gs.gd.UICS[i][j].clickMethod !== undefined) { // If UI element has a clickMethod, add it to currentButtons
-        gs.gd.currentButtons.push(gs.gd.UICS[i][j]);
+    if (i === 0) {
+      console.log(gs.gd.UICS);
+    }
+    for (let j = 0; j < gs.gd.UICS[i].elements.length; j++) { // For each element in the section to be displayed
+      if (gs.gd.UICS[i].elements[j].clickMethod !== undefined) { // If UI element has a clickMethod, add it to currentButtons
+        gs.gd.currentButtons.push(gs.gd.UICS[i].elements[j]);
       }
     }
   }
@@ -157,14 +161,6 @@ function loadScene(page) {
   // STEP 5: Draw each element of each UI section chosen above
   draw();
 
-};
-
-function switchLoadoutList(submenu) {
-  // Take in either 'MEDU' or 'building' and switch the list to display either the list of MEDU loadouts or building loadouts
-};
-
-function switchEditorViewMode(editorViewMode) {
-  // Take in either 'stats' or 'visual' and switch the display to the appropriate kind
 };
 
 function btnActionLog(action) { 
@@ -248,6 +244,15 @@ function spawnZombot() {
   }
   id++;
   //console.log(gs.lm.currentMobiles.length);
+};
+
+function createLoadout(name, base, structure, armor, engine, battery, storage, weapons, utilities) {
+  //                    obj,       int,   int,    int,     int,     int,     arr,       arr
+  gs.gd.loadoutLibrary.push(new Loadout(name, base, structure, armor, engine, battery, storage, weapons, utilities));
+};
+
+function deleteLoadout(index) {
+  gs.gd.loadoutLibrary.splice(index, 1);
 };
 
 // --------------------------------------------------
@@ -458,17 +463,17 @@ function drawBackgroundArt(level) {
 
 function drawUIArt() {
   for (let i = 0; i < gs.gd.UICS.length; i++) { // For each UI section to be displayed
-    for (let j = 0; j < gs.gd.UICS[i].length; j++) { // For each element in the section to be displayed
-      cu.drawImage(gs.gd.UICS[i][j].img, gs.gd.UICS[i][j].uOrigin[0], gs.gd.UICS[i][j].uOrigin[1], gs.gd.UICS[i][j].uWidth, gs.gd.UICS[i][j].uHeight); // Draw the UI element
-      //console.log(`Drew: ${gs.gd.UICS[i][j].name}`);
+    for (let j = 0; j < gs.gd.UICS[i].elements.length; j++) { // For each element in the section to be displayed
+      let element = gs.gd.UICS[i].elements[j];
+      cu.drawImage(element.img, element.uOrigin[0], element.uOrigin[1], element.uWidth, element.uHeight); // Draw the UI element
     }
   }
-  
   
   if (gs.gd.currentScene === 'gameLevel' && !firstFrame) {
     let player = gs.lm.player;
     
     // Display ammo/reload status
+    // *** Needs loop for loadouts with multiple weapons
     let weapon = player.loadout.weapons[0];
     cu.fillStyle = 'white';
     if (weapon.currentShotsInMag > 0) {
@@ -476,7 +481,6 @@ function drawUIArt() {
     } else if (weapon.currentShotsInMag === 0) {
       cu.fillRect(192, 11, 36*(weapon.tslmr/(weapon.magReload*1000)), 5);
     }
-    
     cm.font = '24px Helvetica'
     cm.fillStyle = 'black';
     cm.fillText(player.loadout.weapons[0].currentShotsInMag, 795, 62);
@@ -579,7 +583,7 @@ function drawTestInfo() {
     cm.font = '18px Helvetica';
     cm.fillStyle = 'black';
     cm.fillText('Plyr Pos:', 32, canvasHeight*0.5 + 30);
-    //console.log(gs.lm.player);
+
     if (gs.lm.player.position) {
       cm.fillText(Math.floor(gs.lm.player.position.x), 110, canvasHeight*0.5 + 30);
       cm.fillText(',', 140, canvasHeight*0.5 + 30);
@@ -961,10 +965,6 @@ function findObjectAtCoords(coords) { // Not working as intended
   return false;
 };
 
-function sortNumbersLowestToHighest(array) {
-  //
-};
-
 // --------------------------------------------------
 //                 EVENT HANDLERS
 // --------------------------------------------------
@@ -1015,6 +1015,7 @@ function clickOnCanvas(event) {
   }
 };
 
+// Refactor to use isWithinArea()
 function detectButtonClicked(clickX, clickY) {
   let foundButton = false;
   for (let i = 0; i < gs.gd.currentButtons.length; i++) {
@@ -1052,6 +1053,20 @@ let keydownZ = false;
 let keyZPressedThisFrame = false;
 
 function keyDownHandler(key) {
+  if (key.code === 'KeyM') { // Scroll reset testing
+    console.log('KeyM pressed');
+    for (let i = 0; i < gs.gd.UICS.length; i++) {
+      console.log('Loop activated');
+      gs.gd.UICS[i].scrollReset();
+    }
+  }
+  if (key.code === 'KeyN') { // Testing button relocation upon scrolling
+    console.log('KeyN pressed');
+    for (let i = 0; i < gs.gd.currentButtons.length; i++) {
+      console.log(`${gs.gd.currentButtons[i].name} origin: ${gs.gd.currentButtons[i].mOrigin}`);
+    }
+  }
+
   if (gs.gd.currentScene === 'gameLevel') {
     if (key.code === 'KeyW') { // W key
       keydownW = true;
@@ -1112,6 +1127,37 @@ function mouseUpHandler() {
   gs.gd.mouseDown = false;
 };
 
+function mouseWheelHandler() {
+  event.preventDefault();
+  for (let i = 0; i < gs.gd.UICS.length; i++) {
+    let section = gs.gd.UICS[i];
+
+    if (section.scrolling && isWithinArea(    
+      {
+        x: gs.gd.mousePos.x,  // X coordinate
+        y: gs.gd.mousePos.y,  // Y coordinate
+      }, 
+      {
+        left: section.uOrigin[0],                     //   left X boundary
+        right: section.uOrigin[0] + section.uWidth,   //  right X boundary
+        top: section.uOrigin[1],                      //    top Y boundary
+        bottom: section.uOrigin[1] + section.uHeight, // bottom Y boundary
+      }
+      )) {
+      let scrollDirection;
+      if (event.deltaY < 0) {
+        scrollDirection = -1;
+        scrollDirectionString = 'up';
+      } else if (event.deltaY > 0) {
+        scrollDirection = 1;
+        scrollDirectionString = 'down';
+      }
+
+      section.scroll(scrollDirection);
+    }
+  }
+};
+
 // --------------------------------------------------
 //                 EVENT LISTENERS
 // --------------------------------------------------
@@ -1120,8 +1166,11 @@ canvasMain.addEventListener('mousedown', mouseDownHandler, false);
 canvasMain.addEventListener('mouseup', mouseUpHandler, false);
 canvasMain.addEventListener('mousemove', mouseMoveHandler, false);
 canvasMain.addEventListener('click', clickOnCanvas, false);
+
 document.addEventListener('keydown', keyDownHandler, false);
 document.addEventListener('keyup', keyUpHandler, false);
+
+canvasMain.addEventListener('wheel', mouseWheelHandler, false);
 
 // --------------------------------------------------
 //               INITIAL CANVAS SETUP

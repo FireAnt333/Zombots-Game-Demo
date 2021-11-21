@@ -25,6 +25,8 @@ class Player {
       weapons: [new MCG10()],
       utilities: [],
     };
+    // this.loadout = loadout; // add constructor parameter expecting an instance of the Loadout class
+    // this.moveSpeed = 'equation from code_to_integrate, taking info from this.loadout';
     
     this.maxArmor = 100;
     this.maxStructure = 100;
@@ -159,3 +161,24 @@ class Player {
   //}
 
 };
+
+/*
+class Loadout {
+  constructor (name, base, structure, armor, engine, battery, storage, weapons, utilities) {
+    this.name = name;
+    this.base = base;
+    this.structure = structure;
+    this.armor = armor;
+    this.engine = engine;
+    this.battery = battery;
+    this.storage = storage; 
+    this.weapons = weapons;
+    this.utilities = utilities;
+
+    // Decide the specific icons and colors to be sent to the new LoadoutCard object created below (if base is a chassis, get purple icons for weapons, utilities and mods, green if it's a building)
+    this.elements = [];
+
+    this.loadoutCard = new LoadoutCard(this.base.name, origin, width, height, border, false, null, 0, this.elements, this.base, this.weapons, this.utilities);
+  }
+}
+*/

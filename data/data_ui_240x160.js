@@ -63,7 +63,7 @@ class Button extends UIElement {
 
 /*
 NEW UI ELEMENT FORMAT: 
-const elementName = new UIElement(name, origin, width, height, toggle, imgSrc1, imgSrc2);
+const elementName = new UIElement(name, origin, width, height, toggle, imgSrc0, imgSrc1);
        name: string
      origin: array of 2 integers [uOriginX, uOriginY]
       width: integer
@@ -102,7 +102,7 @@ const titleWeaponStats = new UIElement('Weapon Stats', [189, 17], 51, 29, 1, fal
 
 /*
 NEW BUTTON FORMAT: 
-const btnName = new Button(name, origin, width, height, toggle, imgSrc1, imgSrc2, clickMethod);
+const btnName = new Button(name, origin, width, height, toggle, imgSrc0, imgSrc1, clickMethod);
        name: string
      origin: array of 2 integers [uOriginX, uOriginY]
       width: integer
