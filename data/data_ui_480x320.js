@@ -11,7 +11,6 @@ TO DO:
 
 const upscaleFactor = 2;
 
-
 class UIElement {
   constructor (name, origin, width, height, border, toggle, show, imgSrc0, imgSrc1) {
     // Name of the button for debugging purposes
@@ -68,13 +67,11 @@ class Button extends UIElement {
   }
 };
 
-// Take current UI section variables and make them into objects of the UISection class below, and simply give input of the existing UIElements and Buttons in the "elements" argument
-
 class UISection {
             // string, array, integer, integer, boolean, integer, integer, array
             // 'UI Section A', [0, 0], 100, 100, true, 1, 10, [heading1, button1, button2]
-            // name, origin, width, height, scrolling, scrollDirection, scrollDistance, elements
-  constructor (name, origin, width, height, scrolling, scrollDirection, scrollDistance, elements) {
+            // name, origin, width, height, border, scrolling, scrollDirection, scrollDistance, elements
+  constructor (name, origin, width, height, border, scrolling, scrollDirection, scrollDistance, elements) {
     // Name of the button for debugging purposes
     this.name = name;
 
@@ -82,11 +79,13 @@ class UISection {
     this.mOrigin = [origin[0] * upscaleFactor, origin[1] * upscaleFactor];
     this.mWidth = width * upscaleFactor;
     this.mHeight = height * upscaleFactor;
+    this.mBorder = border * upscaleFactor;
 
     // Coordinates relative to the upscale canvas, where draw handling is done
     this.uOrigin = origin;
     this.uWidth = width;
     this.uHeight = height;
+    this.uBorder = border;
 
     this.scrolling = scrolling; // true or false, does this UI section scroll?
     this.scrollDirection = scrollDirection; // 'vertical' or 'horizontal'
@@ -94,6 +93,7 @@ class UISection {
     this.currentScrollOffset = 0; 
 
     this.elements = elements;
+    this.customText = [];
   } 
 
   // Working, but needs limits on how far to scroll
@@ -158,42 +158,52 @@ class LoadoutCard extends UISection {
     super(name, origin, width, height, border, scrolling, scrollDirection, scrollDistance);
 
     this.backgroundSrc = 'resources/images/ui_480x320/Other UI Components/LoadoutCard_Template_133x42.png';
+    this.selected = false;
+    this.clickMethod = true; // workaround to get button detection system to see LoadoutCards as buttons
+    this.loadoutObj = loadoutObj;
 
-    if (loadoutObj.base.type === 'Chassis') {
+    // Decide what empty mount/slot icon should be displayed
+    if (loadoutObj.base.type === 'chassis') {
       this.emptyWeaponSlotIconSrc = 'resources/images/ui_480x320/Icons/Icon_Empty_Weapon_Slot_PURPLE_16x16.png';
       this.emptyUtilitySlotIconSrc = 'resources/images/ui_480x320/Icons/Icon_Empty_Utility_Slot_PURPLE_16x16.png';
+      this.selectedIndicator = 'resources/images/ui_480x320/Other UI Components/LoadoutCard_SelectedIndicator_PURPLE_137x46.png';
       this.iconColor = 'purple';
-    } else if (loadoutObj.base.type === 'Building') {
+    } else if (loadoutObj.base.type === 'building') {
       this.emptyWeaponSlotIconSrc = 'resources/images/ui_480x320/Icons/Icon_Empty_Weapon_Slot_GREEN_16x16.png';
       this.emptyUtilitySlotIconSrc = 'resources/images/ui_480x320/Icons/Icon_Empty_Utility_Slot_GREEN_16x16.png';
+      this.selectedIndicator = 'resources/images/ui_480x320/Other UI Components/LoadoutCard_SelectedIndicator_GREEN_137x46.png';
       this.iconColor = 'green';
     }
 
-    this.modIndicators = [
-      [true, true, true, false, false], 
-      [false, false, null, null, null]
-    ]; 
-
-    let iconSrcToAdd = '';
+    // Decide what research/ownership status icon and "selected" indicator should be displayed
     if (this.iconColor === 'purple' && loadoutObj.inventoryStatus === 'owned') {
-      iconSrcToAdd = 'resources/images/ui_480x320/Icons/Icon_Owned_PURPLE_16x16.png'; 
+      this.researchIcon = 'resources/images/ui_480x320/Icons/Icon_Owned_PURPLE_16x16.png'; 
     } else if (this.iconColor === 'green' && loadoutObj.inventoryStatus === 'owned') {
-      iconSrcToAdd = 'resources/images/ui_480x320/Icons/Icon_Owned_GREEN_16x16.png'; 
+      this.researchIcon = 'resources/images/ui_480x320/Icons/Icon_Owned_GREEN_16x16.png'; 
     } else if (this.iconColor === 'purple' && loadoutObj.inventoryStatus !== 'owned') {
-      iconSrcToAdd = 'resources/images/ui_480x320/Icons/Icon_Developed_PURPLE_16x16.png'; 
+      this.researchIcon = 'resources/images/ui_480x320/Icons/Icon_Developed_PURPLE_16x16.png'; 
     } else if (this.iconColor === 'green' && loadoutObj.inventoryStatus !== 'owned') {
-      iconSrcToAdd = 'resources/images/ui_480x320/Icons/Icon_Developed_GREEN_16x16.png'; 
-    }
+      this.researchIcon = 'resources/images/ui_480x320/Icons/Icon_Developed_GREEN_16x16.png'; 
+    } 
 
+    // The individual images that make up the LoadoutCard
     this.elements = [
       // new UIElement template: (name, origin, width, height, border, toggle, show, imgSrc0, imgSrc1)
       new UIElement('Template: Loadout Card', [this.uOrigin[0], this.uOrigin[1]], 133, 42, 1, false, true, this.backgroundSrc, null),
-      new UIElement('Icon: Owned', [this.uOrigin[0]+1, this.uOrigin[1]+1], 16, 16, 0, false, true, iconSrcToAdd, null),
+      new UIElement('Icon: Owned', [this.uOrigin[0]+1, this.uOrigin[1]+1], 16, 16, 0, false, true, this.researchIcon, null),
       new UIElement(`Icon: ${loadoutObj.base.class}`, [this.uOrigin[0]+18, this.uOrigin[1]+1], 16, 16, 0, false, true, loadoutObj.base.iconSrc, null),
       new UIElement(`Base Name Text: ${loadoutObj.base.name}`, [this.uOrigin[0]+34, this.uOrigin[1]], 53, 18, 1, false, true, loadoutObj.base.nameImgSrc, null),
       // Add "Modify" button here
     ];
 
+    // Add mod indicators to this.elements with a loop. For each mod indicator, elements.push the appropriate newUIElement
+    this.modIndicators = [
+      [true, true, false, false, false], 
+      [null, null, null, null, null]
+    ]; 
+
+    // Add weapon icons to the LoadoutCard
+    let iconSrcToAdd = '';
     for (let i = 0; i < loadoutObj.weaponsArray.length; i++) {
       if (loadoutObj.weaponsArray[i] !== null && loadoutObj.weaponsArray[i] !== false) {
         if (this.iconColor === 'purple') {
@@ -207,6 +217,7 @@ class LoadoutCard extends UISection {
       } 
     }
 
+    // Add utility icons to the LoadoutCard
     for (let i = 0; i < loadoutObj.utilitiesArray.length; i++) {
       if (loadoutObj.utilitiesArray[i] !== null && loadoutObj.utilitiesArray[i] !== false) {
         if (this.iconColor === 'purple') {
@@ -219,13 +230,43 @@ class LoadoutCard extends UISection {
         this.elements.push(new UIElement(`Utility Mount ${i+1}`, [this.uOrigin[0]+70+(i*19), this.uOrigin[1]+23], 16, 16, 0, false, true, this.emptyUtilitySlotIconSrc, null));
       } 
     }
+  }
 
-    // Add mod indicators with a loop. For each mod indicator, elements.push the appropriate newUIElement
+  click() {
+    // Remove all LoadoutCard buttons from gs.gd.currentButtons
+    let buttons = gs.gd.currentButtons;
+    for (let i = 0; i < buttons.length; i++) {
+      if (buttons[i].name === 'Loadout Card') {
+        buttons[i].selected = false;
+        for (let j = 0; j < buttons[i].elements.length; j++) {
+          if (buttons[i].elements[j].name === 'Selected Indicator') {
+            buttons[i].elements.splice(j,1);
+          }
+        }
+      }
+    }
 
-    //console.log(this.elements);
+    // If this isn't selected already, add the "selected" indicator to the list of elements to draw on the LoadoutCard
+    if (!this.selected) {
+      this.elements.push(new UIElement('Selected Indicator', [this.uOrigin[0]-2, this.uOrigin[1]-2], this.uWidth+4, this.uHeight+4, 0, false, true, this.selectedIndicator, null));
+      this.selected = true;
+      gs.gd.loadoutSelected = this.loadoutObj;
+      //console.log(gs.gd.loadoutSelected);
+    }
+    
+    // Clear and update elements (custom text and item cards) to be displayed in the loadout details section
+    UISecMidRightDepotLoadouts.customText = [];
+    updateLoadoutDetailsDisplay();
   }
 }
 
+class CustomText {
+  constructor(text, font, origin) {
+    this.text = text;
+    this.font = font;
+    this.origin = origin
+  }
+}
 
 
 // --------------------------------------------------
@@ -274,11 +315,18 @@ const txActions = new UIElement('Text: Actions', [0, 0], 0, 0, 0, false, true, '
 const txBackToActions = new UIElement('Text: BackToActions', [0, 0], 0, 0, 0, false, true, '');
 const txModifying = new UIElement('Text: Modifying', [0, 0], 0, 0, 0, false, true, '');
 
+
+
 // dv = Divider
 const dvCenterPanel1 = new UIElement('Divider: Center Panel V1', [0, 0], 0, 0, 0, false, true, '');
 
 // da = Display Area
-const daLoadoutDisplay = new UIElement('Loadout Display', [239, 34], 143, 248, 2, false, true, 'resources/images/ui_480x320/Other UI Components/Loadout_Display_143x248.png');
+const daLoadoutDetails = new UIElement('Loadout Details', [239, 34], 143, 248, 2, false, true, 'resources/images/ui_480x320/Other UI Components/Loadout_Display_143x248.png');
+const daBattery = new UIElement('Battery Weight Display Area', [265, 114], 23, 13, 1, false, true, 'resources/images/ui_480x320/Other UI Components/Loadout_Number_Display_23x13.png', null);
+const daStorage = new UIElement('Storage Weight Display Area', [265, 134], 23, 13, 1, false, true, 'resources/images/ui_480x320/Other UI Components/Loadout_Number_Display_23x13.png', null);
+const daArmor = new UIElement('Armor Weight Display Area', [333, 114], 23, 13, 1, false, true, 'resources/images/ui_480x320/Other UI Components/Loadout_Number_Display_23x13.png', null);
+const daEngine = new UIElement('Engine Weight Display Area', [333, 134], 23, 13, 1, false, true, 'resources/images/ui_480x320/Other UI Components/Loadout_Number_Display_23x13.png', null);
+
 const daResourceDisplay = new UIElement('Resource Display', [380, 34], 100, 105, 2, true, true, 'resources/images/ui_480x320/Other UI Components/ResourceDisplayArea_ResourceNumbers_100x105.png', 'resources/images/ui_480x320/Other UI Components/ResourceDisplayArea_ResourceNames_100x105.png');
 // The UI needs multiple instances of EquipmentDisplayCard; either make multiple manual copies, or a class
 const daEquipmentDisplayCard1 = new UIElement('Equipment Display Card', [189, 0], 51, 19, 1, false, true, 'resources/images/ui_240x160/MEDU_Equipment_Display_Card_51x19.png', null);
@@ -323,6 +371,9 @@ const btnDepot = new Button('BTN: Depot', [186, 0], 106, 36, 2, true, true, 'res
   btnLevels.toggleImage(0);
   btnDepot.toggleImage(1);
   btnLabArmory.toggleImage(0);
+
+  updateLoadoutsToDisplay();
+
   loadScene('depotLoadouts');
   btnActionLog('depot');
 }); // toggle
@@ -352,42 +403,62 @@ const btnLevels = new Button('BTN: Levels', [68, 0], 120, 36, 2, true, true, 're
 }); // toggle
 const btnLoadoutFilterWheeled = new Button('BTN: Loadout Filter: Wheeled', [5, 58], 90, 18, 1, true, true, 'resources/images/ui_480x320/Buttons/Button_Filter_Wheeled_INACTIVE_90x18.png', 'resources/images/ui_480x320/Buttons/Button_Filter_Wheeled_ACTIVE_90x18.png', () => {
   btnLoadoutFilterWheeled.toggleImage();
+  gs.gd.loadoutFilters.wheeled.active = !gs.gd.loadoutFilters.wheeled.active;
+  updateLoadoutsToDisplay();
   btnActionLog('LO: Wheeled');
 });
 const btnLoadoutFilterBipedal = new Button('BTN: Loadout Filter: Bipedal', [5, 78], 90, 18, 1, true, true, 'resources/images/ui_480x320/Buttons/Button_Filter_Bipedal_INACTIVE_90x18.png', 'resources/images/ui_480x320/Buttons/Button_Filter_Bipedal_ACTIVE_90x18.png', () => {
   btnLoadoutFilterBipedal.toggleImage();
+  gs.gd.loadoutFilters.bipedal.active = !gs.gd.loadoutFilters.bipedal.active;
+  updateLoadoutsToDisplay();
   btnActionLog('LO: Bipedal');
 });
 const btnLoadoutFilterTracked = new Button('BTN: Loadout Filter: Tracked', [5, 98], 90, 18, 1, true, true, 'resources/images/ui_480x320/Buttons/Button_Filter_Tracked_INACTIVE_90x18.png', 'resources/images/ui_480x320/Buttons/Button_Filter_Tracked_ACTIVE_90x18.png', () => {
   btnLoadoutFilterTracked.toggleImage();
+  gs.gd.loadoutFilters.tracked.active = !gs.gd.loadoutFilters.tracked.active;
+  updateLoadoutsToDisplay();
   btnActionLog('LO: Tracked');
 });
 const btnLoadoutFilterAerial = new Button('BTN: Loadout Filter: Aerial', [5, 118], 90, 18, 1, true, true, 'resources/images/ui_480x320/Buttons/Button_Filter_Aerial_INACTIVE_90x18.png', 'resources/images/ui_480x320/Buttons/Button_Filter_Aerial_ACTIVE_90x18.png', () => {
   btnLoadoutFilterAerial.toggleImage();
+  gs.gd.loadoutFilters.aerial.active = !gs.gd.loadoutFilters.aerial.active;
+  updateLoadoutsToDisplay();
   btnActionLog('LO: Aerial');
 });
 const btnLoadoutFilterHexipedal = new Button('BTN: Loadout Filter: Hexipedal', [5, 138], 90, 18, 1, true, true, 'resources/images/ui_480x320/Buttons/Button_Filter_Hexipedal_INACTIVE_90x18.png', 'resources/images/ui_480x320/Buttons/Button_Filter_Hexipedal_ACTIVE_90x18.png', () => {
   btnLoadoutFilterHexipedal.toggleImage();
+  gs.gd.loadoutFilters.hexipedal.active = !gs.gd.loadoutFilters.hexipedal.active;
+  updateLoadoutsToDisplay();
   btnActionLog('LO: Hexipedal');
 });
 const btnLoadoutFilterHeadquarters = new Button('BTN: Loadout Filter: Headquarters', [5, 162], 90, 18, 1, true, true, 'resources/images/ui_480x320/Buttons/Button_Filter_Headquarters_INACTIVE_90x18.png', 'resources/images/ui_480x320/Buttons/Button_Filter_Headquarters_ACTIVE_90x18.png', () => {
   btnLoadoutFilterHeadquarters.toggleImage();
+  gs.gd.loadoutFilters.headquarters.active = !gs.gd.loadoutFilters.headquarters.active;
+  updateLoadoutsToDisplay();
   btnActionLog('LO: Headquarters');
 });
 const btnLoadoutFilterWeaponFrame = new Button('BTN: Loadout Filter: Weapon Frame', [5, 182], 90, 18, 1, true, true, 'resources/images/ui_480x320/Buttons/Button_Filter_WeaponFrame_INACTIVE_90x18.png', 'resources/images/ui_480x320/Buttons/Button_Filter_WeaponFrame_ACTIVE_90x18.png', () => {
   btnLoadoutFilterWeaponFrame.toggleImage();
+  gs.gd.loadoutFilters.weaponframe.active = !gs.gd.loadoutFilters.weaponframe.active;
+  updateLoadoutsToDisplay();
   btnActionLog('LO: Weapon Frame');
 });
 const btnLoadoutFilterUtilityFrame = new Button('BTN: Loadout Filter: Utlity Frame', [5, 202], 90, 18, 1, true, true, 'resources/images/ui_480x320/Buttons/Button_Filter_UtilityFrame_INACTIVE_90x18.png', 'resources/images/ui_480x320/Buttons/Button_Filter_UtilityFrame_ACTIVE_90x18.png', () => {
   btnLoadoutFilterUtilityFrame.toggleImage();
+  gs.gd.loadoutFilters.utilityframe.active = !gs.gd.loadoutFilters.utilityframe.active;
+  updateLoadoutsToDisplay();
   btnActionLog('LO: Utility Frame');
 });
 const btnLoadoutFilterBlueprints = new Button('BTN: Loadout Filter: Blueprints', [5, 228], 90, 18, 1, true, true, 'resources/images/ui_480x320/Buttons/Button_Filter_Blueprints_INACTIVE_90x18.png', 'resources/images/ui_480x320/Buttons/Button_Filter_Blueprints_ACTIVE_90x18.png', () => {
   btnLoadoutFilterBlueprints.toggleImage();
+  gs.gd.loadoutFilters.blueprints.active = !gs.gd.loadoutFilters.blueprints.active;
+  updateLoadoutsToDisplay();
   btnActionLog('LO: Blueprints');
 });
 const btnLoadoutFilterOwned = new Button('BTN: Loadout Filter: Owned', [5, 248], 90, 18, 1, true, true, 'resources/images/ui_480x320/Buttons/Button_Filter_Owned_INACTIVE_90x18.png', 'resources/images/ui_480x320/Buttons/Button_Filter_Owned_ACTIVE_90x18.png', () => {
   btnLoadoutFilterOwned.toggleImage();
+  gs.gd.loadoutFilters.owned.active = !gs.gd.loadoutFilters.owned.active;
+  updateLoadoutsToDisplay();
   btnActionLog('LO: Owned');
 });
 const btnManageLoadouts = new Button('BTN: Manage Loadouts', [185, 39], 110, 16, 1, false, true, 'resources/images/ui_480x320/Buttons/Button_ManageLoadouts_110x16.png', null, () => {
@@ -435,28 +506,31 @@ const btnTutorials = new Button('BTN: Tutorials', [184, 175], 112, 22, 1, false,
 // new UISection('', [0, 0], 0, 0, true, 'vertical', 10, []);
 // name, origin, width, height, scrolling, scrollDirection, scrollDistance, elements
 
-let UISecStartBackground = new UISection('UI Sec: Start Background', [0, 0], 0, 0, false, null, 0, [bgStart]);
-let UISecStartMain = new UISection('UI Sec: Start Main', [184, 149], 112, 75, false, null, 0, [titleZombots, txDemoVersion, btnStartGame, btnTutorials, btnInfoCredits]);
+let UISecStartBackground = new UISection('UI Sec: Start Background', [0, 0], 0, 0, 0, false, null, 0, [bgStart]);
+let UISecStartMain = new UISection('UI Sec: Start Main', [184, 149], 112, 75, 0, false, null, 0, [titleZombots, txDemoVersion, btnStartGame, btnTutorials, btnInfoCredits]);
 //let UISecStartMain = new UISection('UI Sec: Start Main', [184, 149], 112, 75, true, 'vertical', 10, [titleZombots, txDemoVersion, btnStartGame, btnTutorials, btnInfoCredits, btnToggleTest]);
 
-let UISecMenuBackground = new UISection('UI Sec: Menu Background', [0, 0], 0, 0, false, null, 0, [bgLeft, bgRight, bgBottom]);
-let UISecTopMain = new UISection('UI Sec: Top Main', [0, 0], 0, 0, false, null, 0, [btnBack, btnOptions, btnLevels, btnDepot, btnLabArmory]);
-let UISecTopGameLevel = new UISection('UI Sec: Top Game Level', [0, 0], 0, 0, false, null, 0, [btnPause, btnEconomyDetails, btnBuildOptions]);
-let UISecLeftDepotLoadouts = new UISection('UI Sec: Left Depot Loadouts', [0, 0], 0, 0, false, null, 0, [bgLoadoutFilters, btnLoadoutFilterWheeled, btnLoadoutFilterBipedal, btnLoadoutFilterTracked, btnLoadoutFilterAerial, btnLoadoutFilterHexipedal, btnLoadoutFilterHeadquarters, btnLoadoutFilterWeaponFrame, btnLoadoutFilterUtilityFrame, btnLoadoutFilterBlueprints, btnLoadoutFilterOwned]);
-let UISecLeftGameLevel = new UISection('UI Sec: Left Game Level', [0, 0], 0, 0, false, null, 0, []);
-let UISecRightResourceDisplay = new UISection('UI Sec: Resource Display', [0, 0], 0, 0, false, null, 0, [daResourceDisplay, btnToggleResourceDisplay]);
-let UISecRightGameLevel = new UISection('UI Sec: Right Game Level', [0, 0], 0, 0, false, null, 0, [daEquipmentDisplayCard1]);
-let UISecBottomGameLevel = new UISection('UI Sec: Bottom Game Level', [0, 0], 0, 0, false, null, 0, [bgBottom, daStatusDisplay]);
-let UISecMidDepotHome = new UISection('UI Sec: Mid Depot Home', [0, 0], 0, 0, false, null, 0, [bgDepotArtwork, btnManageLoadouts]);
-let UISecMidDepotLoadouts = new UISection('UI Sec: Mid Depot Loadouts', [0, 0], 0, 0, false, null, 0, [bgSavedLoadouts, daLoadoutDisplay]);
-let UISecMidDepotLoadoutList = new UISection('UI Sec: Mid Depot Loadout List', [0, 0], 0, 0, true, 'vertical', 10, []);
+
+let UISecMenuBackground = new UISection('UI Sec: Menu Background', [0, 0], 0, 0, 0, false, null, 0, [bgLeft, bgRight, bgBottom]);
+let UISecTopMain = new UISection('UI Sec: Top Main', [0, 0], 0, 0, 0, false, null, 0, [btnBack, btnOptions, btnLevels, btnDepot, btnLabArmory]);
+let UISecTopGameLevel = new UISection('UI Sec: Top Game Level', [0, 0], 0, 0, 0, false, null, 0, [btnPause, btnEconomyDetails, btnBuildOptions]);
+let UISecLeftDepotLoadouts = new UISection('UI Sec: Left Depot Loadouts', [0, 0], 0, 0, 0, false, null, 0, [bgLoadoutFilters, btnLoadoutFilterWheeled, btnLoadoutFilterBipedal, btnLoadoutFilterTracked, btnLoadoutFilterAerial, btnLoadoutFilterHexipedal, btnLoadoutFilterHeadquarters, btnLoadoutFilterWeaponFrame, btnLoadoutFilterUtilityFrame, btnLoadoutFilterBlueprints, btnLoadoutFilterOwned]);
+let UISecLeftGameLevel = new UISection('UI Sec: Left Game Level', [0, 0], 0, 0, 0, false, null, 0, []);
+let UISecRightResourceDisplay = new UISection('UI Sec: Resource Display', [0, 0], 0, 0, 0, false, null, 0, [daResourceDisplay, btnToggleResourceDisplay]);
+let UISecRightGameLevel = new UISection('UI Sec: Right Game Level', [0, 0], 0, 0, 0, false, null, 0, [daEquipmentDisplayCard1]);
+let UISecBottomGameLevel = new UISection('UI Sec: Bottom Game Level', [0, 0], 0, 0, 0, false, null, 0, [bgBottom, daStatusDisplay]);
+let UISecMidDepotHome = new UISection('UI Sec: Mid Depot Home', [0, 0], 0, 0, 0, false, null, 0, [bgDepotArtwork, btnManageLoadouts]);
+//let UISecMidLeftDepotLoadouts = new UISection('UI Sec: Loadout Card Display Area', [0, 0], 0, 0, 0, false, null, 0, [bgSavedLoadouts]);
+let UISecMidDepotLoadoutList = new UISection('UI Sec: Depot Loadout List', [0, 0], 0, 0, 0, true, 'vertical', 10, [bgSavedLoadouts]);
+let UISecMidRightDepotLoadouts = new UISection('UI Sec: Loadout Detail Display Area', [0, 0], 0, 0, 0, false, null, 0, [daLoadoutDetails]);
 
 //name, origin, width, height, border, scrolling, scrollDirection, scrollDistance, itemObj
-let itemCardTest = new ItemCard('Item Card Test', [103,58], 133, 18, 1, false, null, 0, new MCG30());
+//let itemCardTest = new ItemCard('Item Card Test', [103,58], 133, 18, 1, false, null, 0, new MCG30());
+
 //name, origin, width, height, border, scrolling, scrollDirection, scrollDistance, loadoutObj
-let loadoutCardTest = new LoadoutCard('Loadout Card Test', [103,58], 133, 42, 1, false, null, 0, whl200stock);
-let loadoutCardTest2 = new LoadoutCard('Loadout Card Test2', [103,102], 133, 42, 1, false, null, 0, trk300stock);
-let loadoutCardTest3 = new LoadoutCard('Loadout Card Test3', [103,145], 133, 42, 1, false, null, 0, swf40stock);
+//let loadoutCardTest = new LoadoutCard('Loadout Card', [103,58], 133, 42, 1, false, null, 0, whl200stock);
+//let loadoutCardTest2 = new LoadoutCard('Loadout Card', [103,102], 133, 42, 1, false, null, 0, trk300stock);
+//let loadoutCardTest3 = new LoadoutCard('Loadout Card', [103,146], 133, 42, 1, false, null, 0, swf40stock);
 
 let crosshairImg = new Image();
 crosshairImg.src = 'resources/images/ui_240x160/Crosshair_1_16x16.png';
@@ -508,10 +582,10 @@ const uiData = {
     //visualLoadoutEditor: btnVisualLoadoutEditor,
   },
   sections: {
-    itemCardTest: itemCardTest,
-    loadoutCardTest: loadoutCardTest,
-    loadoutCardTest2: loadoutCardTest2,
-    loadoutCardTest3: loadoutCardTest3,
+    //itemCardTest: itemCardTest,
+    //loadoutCardTest: loadoutCardTest,
+    //loadoutCardTest2: loadoutCardTest2,
+    //loadoutCardTest3: loadoutCardTest3,
 
     startBackground: UISecStartBackground,
     startMain: UISecStartMain, 
@@ -530,7 +604,9 @@ const uiData = {
     bottomGameLevel: UISecBottomGameLevel, 
     midDepotHome: UISecMidDepotHome,
     //midDepotEditor: UISecMidDepotEditor, 
-    midDepotLoadouts: UISecMidDepotLoadouts, 
+    //midLeftDepotLoadouts: UISecMidLeftDepotLoadouts, 
+    midDepotLoadoutList: UISecMidDepotLoadoutList,
+    midRightDepotLoadouts: UISecMidRightDepotLoadouts, 
     //midLevelSelect: UISecMidLevelSelect,
   },
   elements: { // Apparently not in use
@@ -546,7 +622,7 @@ const uiData = {
     //bgCenterPanelPlainLeft: bgCenterPanelPlainLeft,
     //bgCenterPanelPlainRight: bgCenterPanelPlainRight,
     //bgDepotArtwork: bgDepotArtwork,
-    //loadoutDisplay: daLoadoutDisplay,
+    //loadoutDetails: daLoadoutDetails,
     //statusDisplay: daStatusDisplay,
 
     //titleBuildingStats: titleBuildingStats,
@@ -643,6 +719,6 @@ let UISecRightResourceDisplay_OldFormat = [daResourceDisplay, btnToggleResourceD
 let UISecRightGameLevel_OldFormat = [daEquipmentDisplayCard1];
 let UISecBottomGameLevel_OldFormat = [bgBottom, daStatusDisplay];
 let UISecMidDepotHome_OldFormat = [bgDepotArtwork, btnManageLoadouts];
-let UISecMidDepotLoadouts_OldFormat = [bgSavedLoadouts, daLoadoutDisplay];
+let UISecMidDepotLoadouts_OldFormat = [bgSavedLoadouts, daLoadoutDetails];
 */
 

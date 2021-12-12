@@ -527,6 +527,21 @@ class MCG30 {
   }
 };
 
+class CAN45 {
+  constructor() {
+    this.name = '45-CAN (Placeholder)';
+    this.wt = 45; // Weight
+    this.type = 'Ballistic';
+    this.class = 'Cannon';
+
+    this.iconSrcRed = 'resources/images/ui_480x320/Icons/Icon_Weapon_Cannon_RED_16x16.png';
+    this.iconSrcGreen = 'resources/images/ui_480x320/Icons/Icon_Weapon_Cannon_GREEN_16x16.png';
+    this.iconSrcPurple = 'resources/images/ui_480x320/Icons/Icon_Weapon_Cannon_PURPLE_16x16.png';
+    this.iconSrcPrimary = this.iconSrcRed;
+    this.nameImgSrc = 'resources/images/ui_480x320/Text/ItemName_60-CAN_53x18.png';
+  }
+};
+
 class CAN60 {
   constructor() {
     this.name = '60-CAN (Placeholder)';

@@ -68,7 +68,10 @@ const gs = {
   gd: { // global data
     currentScene: 'clickToStart',
     UICS: [], // UICS: User Interface Current Sections, shorthand since it is used a lot to manipulate the UI
+    UICLC: [], // UICLC: User Interface Current Loadout Cards
+    UICIC: [], // UICIC: User Interface Current Item Cards
     currentButtons: [],
+    customTextToDraw: [],
     mousePos: {x:0, y:0},
     clickPos: {x:0, y:0},
     mouseClickThisFrame: false,
@@ -89,8 +92,55 @@ const gs = {
     },
     objIDIndex: 0,
 
-    loadoutLibrary: [whl200stock, trk300stock],
+    loadoutLibrary: [whl200stock, trk300stock, swf40stock, swf100stock],
     loadoutsToDisplay: [],
+    loadoutCards: [],
+    loadoutFilters: {
+      wheeled: {
+        active: false,
+        string: 'wheeled',
+      },
+      bipedal: {
+        active: false,
+        string: 'bipedal',
+      },
+      tracked: {
+        active: false,
+        string: 'tracked',
+      },
+      aerial: {
+        active: false,
+        string: 'aerial',
+      },
+      hexipedal: {
+        active: false,
+        string: 'hexipedal',
+      },
+      headquarters: {
+        active: false,
+        string: 'headquarters',
+      },
+      weaponframe: {
+        active: false,
+        string: 'weaponframe',
+      },
+      utilityframe: {
+        active: false,
+        string: 'utilityframe',
+      },
+      blueprints: {
+        active: false,
+        string: 'blueprints',
+      },
+      owned: {
+        active: false,
+        string: 'owned',
+      },
+    },
+    loadoutSelected: null,
+
+    loadoutDetailItemCards: [],
+
     
   }, 
   lm: { // level management
@@ -112,6 +162,7 @@ const gs = {
 function loadScene(page) {
   // STEP 1: Clear the currentButtons array
   gs.gd.currentButtons = [];
+  gs.gd.customTextToDraw = [];
 
   // STEP 2: Decide which UI sections to draw, based on the current menu or level scene
   if (page === 'start') { // load start menu UI/buttons
@@ -122,7 +173,8 @@ function loadScene(page) {
     gs.gd.UICS = [uiData.sections.topMain, uiData.sections.midDepotHome];
   } else if (page === 'depotLoadouts') { // load depot UI/buttons
     gs.gd.currentScene = 'depotLoadouts';
-    gs.gd.UICS = [uiData.sections.menuBackground, uiData.sections.topMain, uiData.sections.leftDepotLoadouts, uiData.sections.rightResourceDisplay, uiData.sections.midDepotLoadouts, uiData.sections.loadoutCardTest, uiData.sections.loadoutCardTest2, uiData.sections.loadoutCardTest3];
+    gs.gd.UICS = [uiData.sections.menuBackground, uiData.sections.topMain, uiData.sections.leftDepotLoadouts, uiData.sections.rightResourceDisplay, uiData.sections.midDepotLoadoutList, uiData.sections.midRightDepotLoadouts];
+    // , uiData.sections.loadoutCardTest, uiData.sections.loadoutCardTest2, uiData.sections.loadoutCardTest3
   } else if (page === 'depotEditor') { // load depot editor mode UI/buttons
     // Add editor buttons to the UICurrentElementsRight sectional array to be displayed
     gs.gd.currentScene = 'depotEditor';
@@ -132,7 +184,7 @@ function loadScene(page) {
     gs.gd.UICS = [uiData.sections.menuBackground, uiData.sections.topMain, uiData.sections.rightResourceDisplay]; // used to include now-unused sections: uiData.sections.leftLevelModeSelect, uiData.sections.midLevelSelect
   } else if (page === 'labArmory') { // load tech tree UI/buttons
     gs.gd.currentScene = 'labArmory';
-    gs.gd.UICS = [uiData.sections.menuBackground, uiData.sections.topMain, uiData.sections.rightResourceDisplay, uiData.sections.itemCardTest]; // used to include now-unused section: uiData.sections.leftTechTreeCategories
+    gs.gd.UICS = [uiData.sections.menuBackground, uiData.sections.topMain, uiData.sections.rightResourceDisplay]; // used to include now-unused section: uiData.sections.leftTechTreeCategories
   } else if (page === 'gameLevel') { // load level UI/buttons
     gs.gd.currentScene = 'gameLevel';
     gs.gd.UICS = [uiData.sections.menuBackground, uiData.sections.topGameLevel, uiData.sections.bottomGameLevel, uiData.sections.leftGameLevel, uiData.sections.rightGameLevel];
@@ -201,6 +253,94 @@ function btnActionLog(action) {
 //         DATA/OBJECT MANAGEMENT FUNCTIONS
 // --------------------------------------------------
 
+function addCustomText(text, font, origin, destination) {
+  let imgArray = [];
+  let imgSpacing = [];
+  let fontHeight = 10;
+  if (font === '7px Compact (Light Gray Background)') {
+    fontHeight = 7;
+  }
+
+  for (let i = 0; i < text.length; i++) {
+    switch (text[i]) {
+      case '0':
+        if (font === '7px Compact (Light Gray Background)') {
+          imgArray.push(`resources/images/ui_480x320/Text/Fonts/7px Compact (Light Gray Background)/0.png`);
+          imgSpacing.push(6);
+        }
+        break;
+      case '1':
+        if (font === '7px Compact (Light Gray Background)') {
+          imgArray.push(`resources/images/ui_480x320/Text/Fonts/7px Compact (Light Gray Background)/1.png`);
+          imgSpacing.push(4);
+        }
+        break;
+      case '2':
+        if (font === '7px Compact (Light Gray Background)') {
+          imgArray.push(`resources/images/ui_480x320/Text/Fonts/7px Compact (Light Gray Background)/2.png`);
+          imgSpacing.push(5);
+        }
+        break;
+      case '3':
+        if (font === '7px Compact (Light Gray Background)') {
+          imgArray.push(`resources/images/ui_480x320/Text/Fonts/7px Compact (Light Gray Background)/3.png`);
+          imgSpacing.push(5);
+        }
+        break;
+      case '4':
+        if (font === '7px Compact (Light Gray Background)') {
+          imgArray.push(`resources/images/ui_480x320/Text/Fonts/7px Compact (Light Gray Background)/4.png`);
+          imgSpacing.push(5);
+        }
+        break;
+      case '5':
+        if (font === '7px Compact (Light Gray Background)') {
+          imgArray.push(`resources/images/ui_480x320/Text/Fonts/7px Compact (Light Gray Background)/5.png`);
+          imgSpacing.push(5);
+        }
+        break;
+      case '6':
+        if (font === '7px Compact (Light Gray Background)') {
+          imgArray.push(`resources/images/ui_480x320/Text/Fonts/7px Compact (Light Gray Background)/6.png`);
+          imgSpacing.push(5);
+        }
+        break;
+      case '7':
+        if (font === '7px Compact (Light Gray Background)') {
+          imgArray.push(`resources/images/ui_480x320/Text/Fonts/7px Compact (Light Gray Background)/7.png`);
+          imgSpacing.push(5);
+        }
+        break;
+      case '8':
+        if (font === '7px Compact (Light Gray Background)') {
+          imgArray.push(`resources/images/ui_480x320/Text/Fonts/7px Compact (Light Gray Background)/8.png`);
+          imgSpacing.push(5);
+        }
+        break;
+      case '9':
+        if (font === '7px Compact (Light Gray Background)') {
+          imgArray.push(`resources/images/ui_480x320/Text/Fonts/7px Compact (Light Gray Background)/9.png`);
+          imgSpacing.push(5);
+        }
+        break;
+      case '/':
+        if (font === '7px Compact (Light Gray Background)') {
+          imgArray.push(`resources/images/ui_480x320/Text/Fonts/7px Compact (Light Gray Background)/Slash.png`);
+          imgSpacing.push(4);
+        }
+        break;
+    }
+  }
+
+destination.push({
+  origin: origin,
+  imgArray: imgArray,
+  imgSpacing: imgSpacing,
+  fontHeight: fontHeight,
+});
+
+};
+
 function startLevel() {
   gs.lm.gamePaused = false;
   spawnPlayer();
@@ -253,6 +393,115 @@ function createLoadout(name, base, structure, armor, engine, battery, storage, w
 
 function deleteLoadout(index) {
   gs.gd.loadoutLibrary.splice(index, 1);
+};
+
+function updateLoadoutsToDisplay() {
+  // Set up initial variables needed
+  let buttons = gs.gd.currentButtons;
+  let library = gs.gd.loadoutLibrary;
+  let display = gs.gd.loadoutsToDisplay;
+  display = [];
+  let loadoutCards = gs.gd.loadoutCards;
+  loadoutCards = [];
+  gs.gd.UICLC = [];
+  let activeFilters = [];
+
+  // Remove all Loadout Card buttons
+  for (let i = 0; i < buttons.length; i++) {
+    if (buttons[i].name === 'Loadout Card') {
+      buttons.splice(i, 1);
+      i -= 1;
+    }
+  }
+
+  // Determine which filters are active and put them in an easily iterable format
+  for (const filter in gs.gd.loadoutFilters) {
+    if (gs.gd.loadoutFilters[filter].active) {
+      activeFilters.push(gs.gd.loadoutFilters[filter].string);
+    }
+  }
+
+  // Pick loadouts to display based on active filters
+  if (activeFilters.length > 0) {
+    for (let i = 0; i < library.length; i++) {
+      for (let j = 0; j < activeFilters.length; j++) {
+        if (library[i].base.class === activeFilters[j]) {
+          display.push(library[i]);
+        }
+      }
+    }
+  }
+
+  // Prepare loadout cards to be displayed
+  for (let i = 0; i < display.length; i++) {
+    loadoutCards.push(new LoadoutCard('Loadout Card', [103,58 + (44*i)], 133, 42, 1, false, null, 0, display[i]));
+    gs.gd.UICLC.push(loadoutCards[i]);
+    buttons.push(loadoutCards[i]);
+    //buttons.push(new Button('Button: Loadout Card', [loadoutCards[i].uOrigin[0], loadoutCards[i].uOrigin[1]], loadoutCards[i].width, loadoutCards[i].height, loadoutCards[i].border, false, null, null, () => {
+      //gs.gd.loadoutSelected = 0;
+    //}));
+  }
+  
+
+  // Could keep loadout "selected" indicator present through filter changes by searching the updated list of LoadoutCards to display. This would require finding the perfectly matching loadout, which may be an unreasonable amount of searching through lots of loadouts, but that's not an issue with a demo where you can't edit loadouts.
+
+  
+};
+
+function updateLoadoutDetailsDisplay() {
+  UISecMidRightDepotLoadouts.elements = [];
+  UISecMidRightDepotLoadouts.elements.push(daLoadoutDetails);
+  let selected = gs.gd.loadoutSelected;
+
+  addCustomText(JSON.stringify(selected.base.weight.max) + '/' + JSON.stringify(selected.base.weight.max), '7px Compact (Light Gray Background)', {x:263 + 4, y:87 + 2}, UISecMidRightDepotLoadouts.customText); // Add text for current weight compared to total weight limit
+  addCustomText(JSON.stringify(selected.structure.current), '7px Compact (Light Gray Background)', {x:311 + 4, y:87 + 2}, UISecMidRightDepotLoadouts.customText); // Add text for weight of current structure
+
+  if (selected.base.battery.max > 0) { // Add text for weight of current battery
+    UISecMidRightDepotLoadouts.elements.push(daBattery);
+    addCustomText(JSON.stringify(selected.battery.current), '7px Compact (Light Gray Background)', {x:daBattery.uOrigin[0] + 4, y:daBattery.uOrigin[1] + 3}, UISecMidRightDepotLoadouts.customText);
+  }
+  if (selected.base.storage.max > 0) { // Add text for weight of current parts storage
+    UISecMidRightDepotLoadouts.elements.push(daStorage);
+    addCustomText(JSON.stringify(selected.storage.current), '7px Compact (Light Gray Background)', {x:daStorage.uOrigin[0] + 4, y:daStorage.uOrigin[1] + 3}, UISecMidRightDepotLoadouts.customText);
+  }
+  if (selected.base.armor.max > 0) { // Add text for weight of current armor
+    UISecMidRightDepotLoadouts.elements.push(daArmor);
+    addCustomText(JSON.stringify(selected.armor.current), '7px Compact (Light Gray Background)', {x:daArmor.uOrigin[0] + 4, y:daArmor.uOrigin[1] + 3}, UISecMidRightDepotLoadouts.customText);
+  }
+  if (selected.base.engine.max > 0) { // Add text for weight of current engine
+    UISecMidRightDepotLoadouts.elements.push(daEngine);
+    addCustomText(JSON.stringify(selected.engine.current), '7px Compact (Light Gray Background)', {x:daEngine.uOrigin[0] + 4, y:daEngine.uOrigin[1] + 3}, UISecMidRightDepotLoadouts.customText);
+  }
+
+
+  // Reset arrays for Current Item Cards and cards to be displayed
+  gs.gd.UICIC = [];
+  let itemCardsToDisplay = [];
+
+  // Add an item card for the base item of the loadout
+  itemCardsToDisplay.push(new ItemCard('Item Card', [244, 58], 133, 18, 1, false, null, 0, selected.base));
+
+  // For each weapon in the loadout, add its item card to be displayed
+  for (let i = 0; i < selected.weaponsArray.length; i++) {
+    if (selected.weaponsArray[i]) {
+      itemCardsToDisplay.push(new ItemCard('Item Card', [244, 165+(19*i)], 133, 18, 1, false, null, 0, selected.weaponsArray[i]));
+    }
+  }
+
+  // For each utility in the loadout, add its item card to be displayed
+  for (let i = 0; i < selected.utilitiesArray.length; i++) {
+    if (selected.utilitiesArray[i]) {
+      itemCardsToDisplay.push(new ItemCard('Item Card', [244, 222+(19*i)], 133, 18, 1, false, null, 0, selected.utilitiesArray[i]));
+    }
+  }
+
+  // For item card to be displayed, add it to the UICIC (User Interface: Current Item Cards) array to be drawn
+  for (let i = 0; i < itemCardsToDisplay.length; i++) {
+    gs.gd.UICIC.push(itemCardsToDisplay[i]);
+  }
+
+  
+
 };
 
 // --------------------------------------------------
@@ -421,6 +670,7 @@ function draw() {
   drawUIArt();
   drawTestInfo();
   drawAuxMenu();
+  drawCustomText();
 
 };
 
@@ -467,6 +717,30 @@ function drawUIArt() {
       let element = gs.gd.UICS[i].elements[j];
       cu.drawImage(element.img, element.uOrigin[0], element.uOrigin[1], element.uWidth, element.uHeight); // Draw the UI element
     }
+  }
+
+  //console.log('drawUIArt running');
+  //console.log(`gs.gd.currentScene: ${gs.gd.currentScene}`);
+  if (gs.gd.currentScene === 'depotLoadouts') { 
+    //console.log('UICLC outside loop reached');
+    for (let i = 0; i < gs.gd.UICLC.length; i++) { // For each LoadoutCard to be displayed
+      //console.log('UICLC draw loop layer 1 reached');
+      for (let j = 0; j < gs.gd.UICLC[i].elements.length; j++) { // For each element in the card to be displayed
+        //console.log('UICLC draw loop layer 2 reached');
+        let element = gs.gd.UICLC[i].elements[j];
+        cu.drawImage(element.img, element.uOrigin[0], element.uOrigin[1], element.uWidth, element.uHeight); // Draw the UI element
+      }
+    }
+
+    for (let i = 0; i < gs.gd.UICIC.length; i++) { // For each ItemCard to be displayed
+      //console.log('UICLC draw loop layer 1 reached');
+      for (let j = 0; j < gs.gd.UICIC[i].elements.length; j++) { // For each element in the card to be displayed
+        //console.log('UICLC draw loop layer 2 reached');
+        let element = gs.gd.UICIC[i].elements[j];
+        cu.drawImage(element.img, element.uOrigin[0], element.uOrigin[1], element.uWidth, element.uHeight); // Draw the UI element
+      }
+    }
+
   }
   
   if (gs.gd.currentScene === 'gameLevel' && !firstFrame) {
@@ -551,6 +825,13 @@ function drawTestInfo() {
     cm.fillStyle = 'black';
     cm.fillText('Current scene:', 530, 592);
     cm.fillText(gs.gd.currentScene, 530, 618);
+
+    // Draw red boxes over all buttons to see if they're registering on the buttons list and show their rough area
+    //for (let i = 0; i < gs.gd.currentButtons.length; i++) {
+      //cm.fillStyle = 'red';
+      //cm.fillRect(gs.gd.currentButtons[i].mOrigin[0] + 4, gs.gd.currentButtons[i].mOrigin[1] + 4, gs.gd.currentButtons[i].mWidth - 8, gs.gd.currentButtons[i].mHeight - 8);
+      //console.log(`Draw params: ${gs.gd.currentButtons[i].mOrigin[0] + 4}, ${gs.gd.currentButtons[i].mOrigin[1] + 4}, ${gs.gd.currentButtons[i].mWidth - 8}, ${gs.gd.currentButtons[i].mHeight - 8}`);
+    //}
 
   } else if (gs.gd.currentScene === 'gameLevel') {
     // Green: displays last button action for testing purposes
@@ -656,6 +937,27 @@ function drawObject(obj) {
   cu.translate(-(obj.position.x - gs.lm.cameraPosition.x + cameraOffset.x), -(obj.position.y - gs.lm.cameraPosition.y + cameraOffset.y)); // Reset the translation
 };
 
+function drawCustomText() {
+  // Custom text objects have these properties: origin, imgArray, imgSpacing, fontHeight
+  let sections = gs.gd.UICS;
+  let xOffset = 0;
+  for (let i = 0; i < sections.length; i++) {
+    let textObjects = sections[i].customText;
+    for (let j = 0; j < textObjects.length; j++) {
+      xOffset = 0;
+      let imgArray = textObjects[j].imgArray;
+      let imgSpacing = textObjects[j].imgSpacing;
+      let origin = textObjects[j].origin;
+      let fontHeight = textObjects[j].fontHeight;
+      for (let k = 0; k < imgArray.length; k++) {
+        let img = new Image();
+        img.src = textObjects[j].imgArray[k];
+        cu.drawImage(img, origin.x + xOffset, origin.y, imgSpacing[k]-1, fontHeight);
+        xOffset += imgSpacing[k];
+      }
+    }
+  }
+};
 
 // New drawMobileObjects() and drawProjectiles() functions: keep loops/organization, leave drawing to drawObject()
 //function drawMobileObjects() {};
@@ -1001,9 +1303,11 @@ function clickOnCanvas(event) {
     gs.gd.clickPos.y = event.clientY - canvasMain.offsetTop - canvasContainer.offsetTop + document.scrollingElement.scrollTop;
 
     let buttonClickedIndex = detectButtonClicked(gs.gd.clickPos.x, gs.gd.clickPos.y);
+    //console.log(`buttonClickedIndex: ${buttonClickedIndex}`);
     if (buttonClickedIndex !== null) {
       let buttonClicked = gs.gd.currentButtons[buttonClickedIndex];
       buttonClicked.click();
+      //console.log('Button clicked');
     }
 
     if (loopRunning) {
@@ -1023,6 +1327,14 @@ function detectButtonClicked(clickX, clickY) {
     let withinY = false;
 
     //btnBorderOffset is now: currentButtons[i].mBorder
+    //console.log('--------------------');
+    //console.log(`Testing button: ${gs.gd.currentButtons[i].name}`);
+    //console.log(`X range: ${gs.gd.currentButtons[i].mOrigin[0]}-${gs.gd.currentButtons[i].mOrigin[0] + gs.gd.currentButtons[i].mWidth}`);
+    //console.log(`Y range: ${gs.gd.currentButtons[i].mOrigin[1]}-${gs.gd.currentButtons[i].mOrigin[1] + gs.gd.currentButtons[i].mHeight}`);
+    //console.log(`Button area: TLC: ${gs.gd.currentButtons[i].mOrigin[0]},${gs.gd.currentButtons[i].mOrigin[1]}  BRC: ${gs.gd.currentButtons[i].mOrigin[0] + gs.gd.currentButtons[i].mWidth},${gs.gd.currentButtons[i].mOrigin[1] + gs.gd.currentButtons[i].mHeight}`);
+    //console.log(`Click location: ${clickX}, ${clickY}`);
+    //console.log(`gs.gd.currentButtons[i].mBorder: ${gs.gd.currentButtons[i].mBorder}`);
+    //console.log('--------------------');
     if (clickX >= gs.gd.currentButtons[i].mOrigin[0] + gs.gd.currentButtons[i].mBorder && clickX <= gs.gd.currentButtons[i].mOrigin[0] + gs.gd.currentButtons[i].mWidth - gs.gd.currentButtons[i].mBorder) {
       withinX = true;
     }
@@ -1031,7 +1343,7 @@ function detectButtonClicked(clickX, clickY) {
     }
     if (withinX && withinY) {
       return i;
-    }
+    } 
   }
 
   if (!foundButton) {

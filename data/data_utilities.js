@@ -19,7 +19,7 @@ class BCT10 {
     this.iconSrcGreen = 'resources/images/ui_480x320/Icons/Icon_Utility_ConstructionTool_GREEN_16x16.png';
     this.iconSrcPurple = 'resources/images/ui_480x320/Icons/Icon_Utility_ConstructionTool_PURPLE_16x16.png';
     this.iconSrcPrimary = this.iconSrcYellow;
-    this.nameImgSrc = '';
+    this.nameImgSrc = 'resources/images/ui_480x320/Text/ItemName_10-BCT_53x18.png';
   }
 };
 
@@ -33,7 +33,7 @@ class BCT20 {
     this.iconSrcGreen = 'resources/images/ui_480x320/Icons/Icon_Utility_ConstructionTool_GREEN_16x16.png';
     this.iconSrcPurple = 'resources/images/ui_480x320/Icons/Icon_Utility_ConstructionTool_PURPLE_16x16.png';
     this.iconSrcPrimary = this.iconSrcYellow;
-    this.nameImgSrc = '';
+    this.nameImgSrc = 'resources/images/ui_480x320/Text/ItemName_20-BCT_53x18.png';
   }
 };
 
