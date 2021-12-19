@@ -181,10 +181,10 @@ function loadScene(page) {
     gs.gd.UICS = [uiData.sections.menuBackground, uiData.sections.topMain, uiData.sections.leftTechTreeCategories, uiData.sections.rightResourceDisplay, uiData.sections.rightDepotEditor, uiData.sections.midDepotEditor];
   } else if (page === 'levelSelect') { // load level select UI/buttons
     gs.gd.currentScene = 'levelSelect';
-    gs.gd.UICS = [uiData.sections.menuBackground, uiData.sections.topMain, uiData.sections.rightResourceDisplay]; // used to include now-unused sections: uiData.sections.leftLevelModeSelect, uiData.sections.midLevelSelect
+    gs.gd.UICS = [uiData.sections.menuBackground, uiData.sections.topMain, uiData.sections.rightResourceDisplay, uiData.sections.midLevelSelect]; // used to include now-unused sections: uiData.sections.leftLevelModeSelect
   } else if (page === 'labArmory') { // load tech tree UI/buttons
     gs.gd.currentScene = 'labArmory';
-    gs.gd.UICS = [uiData.sections.menuBackground, uiData.sections.topMain, uiData.sections.rightResourceDisplay]; // used to include now-unused section: uiData.sections.leftTechTreeCategories
+    gs.gd.UICS = [uiData.sections.menuBackground, uiData.sections.topMain, uiData.sections.rightResourceDisplay, uiData.sections.midLabArmoryHome]; // used to include now-unused section: uiData.sections.leftTechTreeCategories
   } else if (page === 'gameLevel') { // load level UI/buttons
     gs.gd.currentScene = 'gameLevel';
     gs.gd.UICS = [uiData.sections.menuBackground, uiData.sections.topGameLevel, uiData.sections.bottomGameLevel, uiData.sections.leftGameLevel, uiData.sections.rightGameLevel];
@@ -539,8 +539,9 @@ function gameLoopBasic(timestamp) { // WORKING
 
 function gameLoopDelta(timestamp) { // WORKING, IN USE
 //console.log(timestamp);
+  console.log('Game loop ran a frame!');
   if (firstFrame) {
-    gs.lm.tols = timestamp; // Establishes time of level start
+    //gs.lm.tols = timestamp; // Establishes time of level start
   }
   
   if (timestamp < lastFrameTimestamp + (1000/maxFPS)) {
@@ -588,7 +589,7 @@ function doMobBehavior(timestamp) {
 };
 
 function doPlayerBehavior(timestamp) {
-  if (!firstFrame) {
+  if (!firstFrame && gs.gd.currentScene === "gameLevel") {
     gs.lm.player.move();
     gs.lm.player.loadout.weapons[0].checkToStartReload(timestamp);
     gs.lm.player.loadout.weapons[0].checkToCompleteReload(timestamp);
@@ -1297,6 +1298,7 @@ function clickOnCanvas(event) {
     canvasUpscale.style.cursor = 'none';
     loadScene('start')
     firstClick = false;
+    startGameLoop();
     return;
   } else {
     gs.gd.clickPos.x = event.clientX - canvasMain.offsetLeft - canvasContainer.offsetLeft + document.scrollingElement.scrollLeft;
@@ -1493,6 +1495,11 @@ cm.font = '36px Helvetica';
 cm.fillText('Click to start!', canvasWidth*0.4, canvasHeight*0.5);
 
 
+// --------------------------------------------------
+//                 START GAME LOOP
+// --------------------------------------------------
+
+//startGameLoop();
 
 // --------------------------------------------------
 //                    OTHER STUFF

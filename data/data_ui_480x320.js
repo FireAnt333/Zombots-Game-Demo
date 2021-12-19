@@ -297,11 +297,13 @@ const bgRight = new UIElement('Background: Right', [380, 34], 100, 286, 2, false
 const bgBottom = new UIElement('Background: Bottom', [98, 280], 284, 40, 2, false, true, 'resources/images/ui_480x320/Backgrounds/Background_LowerCenter_284x40.png', null);
 const bgCenterPanelPlainLeft = new UIElement('Background: Center Panel (Plain, Left)', [98, 34], 143, 248, 2, false, true, 'resources/images/ui_480x320/Backgrounds/Background_CenterPanel_Plain_143x248.png');
 const bgCenterPanelPlainRight = new UIElement('Background: Center Panel (Plain, Right)', [239, 34], 143, 248, 2, false, true, 'resources/images/ui_480x320/Backgrounds/Background_CenterPanel_Plain_143x248.png');
+const bgCenterPanelPlainFull = new UIElement('Background: Center Panel (Plain, Full)', [98, 34], 284, 248, 2, false, true, 'resources/images/ui_480x320/Backgrounds/Background_CenterPanel_Undivided_284x248.png');
+
+const bgSavedLoadouts = new UIElement('Background: Saved Loadouts', [98, 34], 143, 248, 2, false, true, 'resources/images/ui_480x320/Backgrounds/Background_CenterPanel_SavedLoadouts_143x248.png');
+const bgLoadoutFilters = new UIElement('Background: Loadout Filters', [0, 34], 100, 286, 2, false, true, 'resources/images/ui_480x320/Backgrounds/Background_LoadoutFilters_100x286.png');
 
 const bgDepotArtwork = new UIElement('Background: Depot Artwork', [0, 34], 480, 286, 2, false, true, 'resources/images/ui_480x320/Backgrounds/Background_ArtworkComingSoon_480x286.png');
-const bgSavedLoadouts = new UIElement('Background: Saved Loadouts', [98, 34], 143, 248, 2, false, true, 'resources/images/ui_480x320/Backgrounds/Background_CenterPanel_SavedLoadouts_143x248.png');
-
-const bgLoadoutFilters = new UIElement('Background: Loadout Filters', [0, 34], 100, 286, 2, false, true, 'resources/images/ui_480x320/Backgrounds/Background_LoadoutFilters_100x286.png');
+const bgTempLabUnderDevelopment = new UIElement('Text: Temp: Lab Under Development', [98, 34], 284, 248, 2, false, true, 'resources/images/ui_480x320/Backgrounds/Background_Lab_Under_Development_284x248.png');
 
 // tx = Text
 const txDemoVersion = new UIElement('Demo Version', [3, 3], 130, 16, 1, false, true, 'resources/images/ui_480x320/Other UI Components/Zombots_Demo_V0.0.1_130x16.png');
@@ -314,6 +316,7 @@ const txItemStats = new UIElement('Text: Item Stats', [0, 0], 0, 0, 0, false, tr
 const txActions = new UIElement('Text: Actions', [0, 0], 0, 0, 0, false, true, '');
 const txBackToActions = new UIElement('Text: BackToActions', [0, 0], 0, 0, 0, false, true, '');
 const txModifying = new UIElement('Text: Modifying', [0, 0], 0, 0, 0, false, true, '');
+
 
 
 
@@ -477,6 +480,10 @@ const btnPause = new Button('BTN: Pause', [0, 0], 14, 18, 2, false, true, 'resou
   currentButtons.push(btnBack2);
   btnActionLog('pause');
 });
+const btnStartDemoLevel = new Button('BTN: Start Demo Level', [186, 150], 108, 16, 1, false, true, 'resources/images/ui_480x320/Buttons/Button_Start_Demo_Level_108x16.png', null, () => {
+  loadScene('gameLevel');
+  btnActionLog('start level');
+});
 const btnStartGame = new Button('BTN: Start Game', [184, 149], 112, 22, 1, false, true, 'resources/images/ui_480x320/Buttons/Button_StartGame_112x22.png', null, () => {
   loadScene('depotHome');
   btnActionLog('start game');
@@ -523,6 +530,9 @@ let UISecMidDepotHome = new UISection('UI Sec: Mid Depot Home', [0, 0], 0, 0, 0,
 //let UISecMidLeftDepotLoadouts = new UISection('UI Sec: Loadout Card Display Area', [0, 0], 0, 0, 0, false, null, 0, [bgSavedLoadouts]);
 let UISecMidDepotLoadoutList = new UISection('UI Sec: Depot Loadout List', [0, 0], 0, 0, 0, true, 'vertical', 10, [bgSavedLoadouts]);
 let UISecMidRightDepotLoadouts = new UISection('UI Sec: Loadout Detail Display Area', [0, 0], 0, 0, 0, false, null, 0, [daLoadoutDetails]);
+
+let UISecMidLevelSelect = new UISection('UI Sec: Mid Level Select', [0, 0], 0, 0, 0, false, null, 0, [bgCenterPanelPlainFull, btnStartDemoLevel]);
+let UISecMidLabArmoryHome = new UISection('UI Sec: Mid Lab Armory Home', [0, 0], 0, 0, 0, false, null, 0, [bgTempLabUnderDevelopment]);
 
 //name, origin, width, height, border, scrolling, scrollDirection, scrollDistance, itemObj
 //let itemCardTest = new ItemCard('Item Card Test', [103,58], 133, 18, 1, false, null, 0, new MCG30());
@@ -607,7 +617,8 @@ const uiData = {
     //midLeftDepotLoadouts: UISecMidLeftDepotLoadouts, 
     midDepotLoadoutList: UISecMidDepotLoadoutList,
     midRightDepotLoadouts: UISecMidRightDepotLoadouts, 
-    //midLevelSelect: UISecMidLevelSelect,
+    midLevelSelect: UISecMidLevelSelect,
+    midLabArmoryHome: UISecMidLabArmoryHome,
   },
   elements: { // Apparently not in use
     //daDialogueBox: daDialogueBox, // da = display area
