@@ -274,7 +274,7 @@ class CustomText {
 // --------------------------------------------------
 
 /* NEW UI ELEMENT FORMAT: 
-const elementName = new UIElement(name, origin, width, height, toggle, show, imgSrc0, imgSrc1);
+const elementName = new UIElement(name, origin, width, height, border, toggle, show, imgSrc0, imgSrc1);
 const elementName = new UIElement('', [0, 0], 0, 0, 0, false, true, '', '');
        name: string
      origin: array of 2 integers [uOriginX, uOriginY]
@@ -295,6 +295,8 @@ const bgStart = new UIElement('Background: Start Screen', [0, 0], 480, 320, 4, f
 const bgLeft = new UIElement('Background: Left', [0, 34], 100, 286, 2, false, true, 'resources/images/ui_480x320/Backgrounds/Background_Sidebar_100x286.png', null);
 const bgRight = new UIElement('Background: Right', [380, 34], 100, 286, 2, false, true, 'resources/images/ui_480x320/Backgrounds/Background_Sidebar_100x286.png', null);
 const bgBottom = new UIElement('Background: Bottom', [98, 280], 284, 40, 2, false, true, 'resources/images/ui_480x320/Backgrounds/Background_LowerCenter_284x40.png', null);
+const bgTop = new UIElement('Background: Top', [98, 0], 284, 36, 2, false, true, 'resources/images/ui_480x320/Backgrounds/Background_UpperCenter_284x36.png', null);
+const bgUpperRight = new UIElement('Background: Upper Right (Level)', [380, 0], 100, 36, 2, false, true, 'resources/images/ui_480x320/Backgrounds/Background_UpperRightLevel_100x36.png', null);
 const bgCenterPanelPlainLeft = new UIElement('Background: Center Panel (Plain, Left)', [98, 34], 143, 248, 2, false, true, 'resources/images/ui_480x320/Backgrounds/Background_CenterPanel_Plain_143x248.png');
 const bgCenterPanelPlainRight = new UIElement('Background: Center Panel (Plain, Right)', [239, 34], 143, 248, 2, false, true, 'resources/images/ui_480x320/Backgrounds/Background_CenterPanel_Plain_143x248.png');
 const bgCenterPanelPlainFull = new UIElement('Background: Center Panel (Plain, Full)', [98, 34], 284, 248, 2, false, true, 'resources/images/ui_480x320/Backgrounds/Background_CenterPanel_Undivided_284x248.png');
@@ -333,7 +335,9 @@ const daEngine = new UIElement('Engine Weight Display Area', [333, 134], 23, 13,
 const daResourceDisplay = new UIElement('Resource Display', [380, 34], 100, 105, 2, true, true, 'resources/images/ui_480x320/Other UI Components/ResourceDisplayArea_ResourceNumbers_100x105.png', 'resources/images/ui_480x320/Other UI Components/ResourceDisplayArea_ResourceNames_100x105.png');
 // The UI needs multiple instances of EquipmentDisplayCard; either make multiple manual copies, or a class
 const daEquipmentDisplayCard1 = new UIElement('Equipment Display Card', [189, 0], 51, 19, 1, false, true, 'resources/images/ui_240x160/MEDU_Equipment_Display_Card_51x19.png', null);
-const daStatusDisplay = new UIElement('MEDU Status Display', [49, 140], 142, 20, 1, false, true, 'resources/images/ui_240x160/MEDU_Status_Display_142x20.png', null);
+const daEquipmentDisplayCard2 = new UIElement('Equipment Display Card', [380, 34], 100, 38, 2, false, true, 'resources/images/ui_480x320/Other UI Components/MEDU_Equipment_Display_Card_2_100x38.png', null);
+
+const daStatusDisplay = new UIElement('MEDU Status Display', [98, 280], 284, 40, 1, false, true, 'resources/images/ui_480x320/Other UI Components/MEDU_Status_Display_3_284x40.png', null);
 
 
 // --------------------------------------------------
@@ -367,7 +371,7 @@ const btnBack = new Button('BTN: Back', [0, 0], 36, 36, 2, false, true, 'resourc
   }
   btnActionLog('back');
 });
-const btnBuildOptions = new Button('BTN: Build Options', [33, 0], 18, 18, 2, false, true, 'resources/images/ui_240x160/Button_BuildOptions_18x18.png', null, () => {
+const btnBuildOptions = new Button('BTN: Build Options', [64, 0], 36, 36, 2, false, true, 'resources/images/ui_480x320/Buttons/Button_BuildOptions_36x36.png', null, () => {
   btnActionLog('build options');
 });
 const btnDepot = new Button('BTN: Depot', [186, 0], 106, 36, 2, true, true, 'resources/images/ui_480x320/Buttons/Button_Depot_INACTIVE_106x36.png', 'resources/images/ui_480x320/Buttons/Button_Depot_ACTIVE_106x36.png', () => {
@@ -380,7 +384,7 @@ const btnDepot = new Button('BTN: Depot', [186, 0], 106, 36, 2, true, true, 'res
   loadScene('depotLoadouts');
   btnActionLog('depot');
 }); // toggle
-const btnEconomyDetails = new Button('BTN: Economy Details', [12, 0], 23, 18, 2, false, true, 'resources/images/ui_240x160/Button_EconomyDetails_23x18.png', null, () => {
+const btnEconomyDetails = new Button('BTN: Economy Details', [22, 0], 44, 36, 2, false, true, 'resources/images/ui_480x320/Buttons/Button_EconomyDetails_44x36.png', null, () => {
   btnActionLog('econ details');
 });
 const btnEditLoadout = new Button('BTN: Edit Loadout', [50, 120], 59, 11, 1, false, true, 'resources/images/ui_240x160/Button_EditLoadout_59x11.png', null, () => {
@@ -475,7 +479,7 @@ const btnNewLoadout = new Button('BTN: New Loadout', [50, 130], 59, 11, 1, false
 const btnOptions = new Button('BTN: Options', [34, 0], 36, 36, 2, false, true, 'resources/images/ui_480x320/Buttons/Button_Options_36x36.png', null, () => {
   btnActionLog('options');
 });
-const btnPause = new Button('BTN: Pause', [0, 0], 14, 18, 2, false, true, 'resources/images/ui_240x160/Button_Pause_14x18.png', null, () => {
+const btnPause = new Button('BTN: Pause', [0, 0], 24, 36, 2, false, true, 'resources/images/ui_480x320/Buttons/Button_Pause_24x36.png', null, () => {
   gs.lm.gamePaused = true;
   currentButtons.push(btnBack2);
   btnActionLog('pause');
@@ -520,11 +524,11 @@ let UISecStartMain = new UISection('UI Sec: Start Main', [184, 149], 112, 75, 0,
 
 let UISecMenuBackground = new UISection('UI Sec: Menu Background', [0, 0], 0, 0, 0, false, null, 0, [bgLeft, bgRight, bgBottom]);
 let UISecTopMain = new UISection('UI Sec: Top Main', [0, 0], 0, 0, 0, false, null, 0, [btnBack, btnOptions, btnLevels, btnDepot, btnLabArmory]);
-let UISecTopGameLevel = new UISection('UI Sec: Top Game Level', [0, 0], 0, 0, 0, false, null, 0, [btnPause, btnEconomyDetails, btnBuildOptions]);
+let UISecTopGameLevel = new UISection('UI Sec: Top Game Level', [0, 0], 0, 0, 0, false, null, 0, [bgTop, bgUpperRight, btnPause, btnEconomyDetails, btnBuildOptions]);
 let UISecLeftDepotLoadouts = new UISection('UI Sec: Left Depot Loadouts', [0, 0], 0, 0, 0, false, null, 0, [bgLoadoutFilters, btnLoadoutFilterWheeled, btnLoadoutFilterBipedal, btnLoadoutFilterTracked, btnLoadoutFilterAerial, btnLoadoutFilterHexipedal, btnLoadoutFilterHeadquarters, btnLoadoutFilterWeaponFrame, btnLoadoutFilterUtilityFrame, btnLoadoutFilterBlueprints, btnLoadoutFilterOwned]);
 let UISecLeftGameLevel = new UISection('UI Sec: Left Game Level', [0, 0], 0, 0, 0, false, null, 0, []);
 let UISecRightResourceDisplay = new UISection('UI Sec: Resource Display', [0, 0], 0, 0, 0, false, null, 0, [daResourceDisplay, btnToggleResourceDisplay]);
-let UISecRightGameLevel = new UISection('UI Sec: Right Game Level', [0, 0], 0, 0, 0, false, null, 0, [daEquipmentDisplayCard1]);
+let UISecRightGameLevel = new UISection('UI Sec: Right Game Level', [0, 0], 0, 0, 0, false, null, 0, [daEquipmentDisplayCard2]);
 let UISecBottomGameLevel = new UISection('UI Sec: Bottom Game Level', [0, 0], 0, 0, 0, false, null, 0, [bgBottom, daStatusDisplay]);
 let UISecMidDepotHome = new UISection('UI Sec: Mid Depot Home', [0, 0], 0, 0, 0, false, null, 0, [bgDepotArtwork, btnManageLoadouts]);
 //let UISecMidLeftDepotLoadouts = new UISection('UI Sec: Loadout Card Display Area', [0, 0], 0, 0, 0, false, null, 0, [bgSavedLoadouts]);

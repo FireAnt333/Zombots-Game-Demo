@@ -256,11 +256,15 @@ CI = Calculated Input (based on direct inputs)
 
 // 11/12/21: Constructor takes in 10 values indicating mods, true/false/null, true for active mod slot, false for inactive mod slot, null for a slot with no mods available (used for items with less than 10 possible mods)
 class MCG10 {
-  constructor() {
+  constructor(position) {
     this.img = new Image();
-    this.img.src = 'resources/images/sprites/weapons/Player_Gun_16x16.png';
-    this.width = 16;
-    this.height = 16;
+    //this.img.src = 'resources/images/sprites/weapons/Player_Gun_16x16.png';
+    //this.width = 16;
+    //this.height = 16;
+
+    this.img.src = 'resources/images/sprites/weapons/Player_Gun_32x32.png';
+    this.width = 32;
+    this.height = 32;
 
     this.iconSrcRed = 'resources/images/ui_480x320/Icons/Icon_Weapon_MachineGun_RED_16x16.png';
     this.iconSrcGreen = 'resources/images/ui_480x320/Icons/Icon_Weapon_MachineGun_GREEN_16x16.png';
@@ -270,9 +274,11 @@ class MCG10 {
 
     this.collisionIgnoreList = ['player'];
 
-    this.position = {x:0, y:0};
-    this.projectileOrigin = {x:8, y:2};
-    this.centerOfRotation = {x:8, y:10};
+    this.position = position;
+    //this.projectileOrigin = {x:8, y:2};
+    //this.centerOfRotation = {x:8, y:10};
+    this.projectileOrigin = {x:16, y:0};
+    this.centerOfRotation = {x:16, y:16};
     this.angle = 0;
 
     this.name = '10-MCG';
@@ -316,7 +322,7 @@ class MCG10 {
         ammoNameShort: 'BA',
         ammoNameFull: 'Ball',
         description: 'A basic round designed to deal damage to unarmored or lightly armored targets.',
-        pps: 1,
+        pps: 1, // Projectiles Per Shot
         damage: 10,
         damageVariance: 0.2,
         damageType: 'Ballistic',
@@ -325,8 +331,8 @@ class MCG10 {
         splashRange: 0,
         optRange: 10,
         minRange: 0,
-        maxRange: 100,
-        projectileSpeed: 2,
+        maxRange: 150,
+        projectileSpeed: 3,
         spreadMultiplier: 1,
         hitRange: 2, 
         imgSrc: 'resources/images/sprites/weapons/Bullet1_8x8.png',
@@ -337,7 +343,7 @@ class MCG10 {
         ammoNameShort: 'HP',
         ammoNameFull: 'Hollow Point',
         description: 'An alternative round designed to deal higher damage at the cost of lower armor penetration.',
-        pps: 1,
+        pps: 1, // Projectiles Per Shot
         damage: 12,
         damageVariance: 0.2,
         damageType: 'Ballistic',
@@ -346,8 +352,8 @@ class MCG10 {
         splashRange: 0,
         optRange: 9,
         minRange: 0,
-        maxRange: 100,
-        projectileSpeed: 2,
+        maxRange: 130,
+        projectileSpeed: 2.7,
         spreadMultiplier: 0.9,
         hitRange: 2, 
         imgSrc: 'resources/images/sprites/weapons/Bullet1_8x8.png',
@@ -384,8 +390,9 @@ class MCG10 {
     //console.log(`TSLMR: ${timestamp - this.tolmr}`);
     if (
       timestamp -  this.tols >= this.shotReload*1000 &&
-      (timestamp - this.tolmr >=  this.magReload*1000 || this.firstMag) &&
-      this.currentShotsInMag > 0
+      (timestamp - this.tolmr >= this.magReload*1000 || this.firstMag) &&
+      this.currentShotsInMag > 0 &&
+      !gs.lm.weaponsLocked
     ) {
       return true;
     } else {

@@ -1,7 +1,7 @@
 /*
 ZOMBOTS DEMO V0.0.1 - In Progress
 
-// Last edited: 12/18/21
+// Last edited: 09/30/22
 
 // Git local repository directory path: cd Desktop/'Ideas and Plans'/Career/'Coding Projects'/'Personal Projects'/Zombots/'Zombots Canvas Project'
 1) git add .
@@ -49,8 +49,8 @@ const canvasHeight = 640; // 160 on downscaled canvas
 
 //const cameraOffset = {x: canvasWidth/upscaleFactor/2, // 120
 //                      y: ((canvasHeight/upscaleFactor)-20) / 2} ; // 70
-const cameraOffset = {x: 120, // 240
-                      y: 70}; // 140
+const cameraOffset = {x: 240, // 240
+                      y: 160}; // 140
 //const cameraOffsetX = (canvasWidth/upscaleFactor/2); // 120
 //const cameraOffsetY = (((canvasHeight/upscaleFactor)-20) / 2); // 70
 //let cameraPosition = {x:0, y:0};
@@ -84,10 +84,10 @@ const gs = {
         //right: 760 / upscaleFactor, 
         //top: 0 / upscaleFactor, 
         //bottom: 560 / upscaleFactor
-        left: 50, 
-        right: 240, 
-        top: 0, 
-        bottom: 140
+        left: 100, 
+        right: 380, 
+        top: 36, 
+        bottom: 280,
       },
       height: (760 / upscaleFactor) - (200 / upscaleFactor),
       width: (560 / upscaleFactor) - (0 / upscaleFactor)
@@ -147,13 +147,16 @@ const gs = {
   }, 
   lm: { // level management
     level: null,
-    tols: 0, // Time Of Level Start
+    levelStartFlag: false,
+    levelStartTime: 0,
+    levelElapsedTime: 0,
     gamePaused: false,
     cameraPosition: {x:0, y:0},
     currentMobiles: [],
     currentStatics: [],
     currentProjectiles: [],
     player: {},
+    weaponsLocked: false,
   },
 };
 
@@ -191,6 +194,7 @@ function loadScene(page) {
     gs.gd.currentScene = 'gameLevel';
     gs.gd.UICS = [uiData.sections.menuBackground, uiData.sections.topGameLevel, uiData.sections.bottomGameLevel, uiData.sections.leftGameLevel, uiData.sections.rightGameLevel];
     gs.lm.level = levelData.testLevel;
+    startLevel();
   } else if (page === 'test') { // load test page
     gs.gd.currentScene = 'test';
     gs.gd.UICS = [];
@@ -345,8 +349,10 @@ destination.push({
 
 function startLevel() {
   gs.lm.gamePaused = false;
+  gs.lm.levelStartFlag = true;
+  gs.lm.weaponsLocked = true;
   spawnPlayer();
-  startGameLoop();
+  //startGameLoop();
 };
 
 function spawnPlayer() {
@@ -354,12 +360,14 @@ function spawnPlayer() {
   gs.lm.player = new Player(
     'player', // Name
     gs.lm.level.playerSpawnPoint, // Position, initialized to spawn location based on level
-    16, // Width
-    16, // Height
+    32, // Width
+    32, // Height
     0, // Direction (8-direction system)
-    0.5, // Move speed
-    'resources/images/sprites/player/Player_MEDU_White_16x16.png', // Right-angle sprite
-    'resources/images/sprites/player/Player_MEDU_White_16x16_Rotated.png', // Diagonal sprite
+    0.8, // Move speed
+    //'resources/images/sprites/player/Player_MEDU_White_16x16.png', // Right-angle sprite
+    //'resources/images/sprites/player/Player_MEDU_White_16x16_Rotated.png', // Diagonal sprite
+    'resources/images/sprites/player/Player_MEDU_Gray_32x32.png', // Right-angle sprite
+    'resources/images/sprites/player/Player_MEDU_Gray_32x32_Rotated.png', // Diagonal sprite
     );
   gs.lm.currentMobiles.push(gs.lm.player);
 
@@ -376,16 +384,23 @@ function spawnZombot() {
   let num = Math.random()*10;
   console.log(`    Spawn ID: ${id}`);
   if (num > 10) {
-    gs.lm.currentMobiles.push(new ZombotMaxGoop({x: canvasToLevelCoords(gs.gd.mousePos).x, y: canvasToLevelCoords(gs.gd.mousePos).y}));
+    //gs.lm.currentMobiles.push(new ZombotMaxGoop({x: canvasToLevelCoords(gs.gd.mousePos).x, y: canvasToLevelCoords(gs.gd.mousePos).y}));
   } else if (num > 10) {
-    gs.lm.currentMobiles.push(new ZombotHuntingClown({x: canvasToLevelCoords(gs.gd.mousePos).x, y: canvasToLevelCoords(gs.gd.mousePos).y}));
+    //gs.lm.currentMobiles.push(new ZombotHuntingClown({x: canvasToLevelCoords(gs.gd.mousePos).x, y: canvasToLevelCoords(gs.gd.mousePos).y}));
   } else if (num > 10) {
-    gs.lm.currentMobiles.push(new ZombotCuteGoop({x: canvasToLevelCoords(gs.gd.mousePos).x, y: canvasToLevelCoords(gs.gd.mousePos).y}));
+    //gs.lm.currentMobiles.push(new ZombotCuteGoop({x: canvasToLevelCoords(gs.gd.mousePos).x, y: canvasToLevelCoords(gs.gd.mousePos).y}));
   } else {
     gs.lm.currentMobiles.push(new ZombotBasic({x: canvasToLevelCoords(gs.gd.mousePos).x, y: canvasToLevelCoords(gs.gd.mousePos).y}, id));
   }
   id++;
   //console.log(gs.lm.currentMobiles.length);
+};
+
+function spawnTurret() {
+  console.log(`Spawn turret at: x: ${canvasToLevelCoords(gs.gd.mousePos).x}, y: ${canvasToLevelCoords(gs.gd.mousePos).y}`);
+  gs.lm.currentStatics.push(new SWF40({x: canvasToLevelCoords(gs.gd.mousePos).x, y: canvasToLevelCoords(gs.gd.mousePos).y}, id));
+  id++;
+  console.log(gs.lm.currentStatics.length);
 };
 
 function createLoadout(name, base, structure, armor, engine, battery, storage, weapons, utilities) {
@@ -542,8 +557,11 @@ function gameLoopBasic(timestamp) { // WORKING
 function gameLoopDelta(timestamp) { // WORKING, IN USE
 //console.log(timestamp);
   console.log('Game loop ran a frame!');
-  if (firstFrame) {
-    //gs.lm.tols = timestamp; // Establishes time of level start
+  if (gs.lm.levelStartFlag) {
+    gs.lm.levelStartTime = timestamp; // Establishes time of level start
+    gs.lm.levelStartFlag = false;
+  } else {
+    gs.lm.levelElapsedTime = timestamp - gs.lm.levelStartTime; // If level is already in progress, update elapsed time
   }
   
   if (timestamp < lastFrameTimestamp + (1000/maxFPS)) {
@@ -574,6 +592,10 @@ function gameLoopDelta(timestamp) { // WORKING, IN USE
 };
 
 function loopUpdate(timestamp) {
+  if (gs.lm.levelElapsedTime > 500) {
+    gs.lm.weaponsLocked = false;
+  }
+
   doMobBehavior(timestamp);
   doProjectileBehavior();
   // Call other game logic/behavior functions
@@ -581,7 +603,12 @@ function loopUpdate(timestamp) {
   if (keyZPressedThisFrame) {
     spawnZombot();
   }
+  if (keyTPressedThisFrame) {
+    spawnTurret();
+  }
+  // ADD FUNCTION: function clearKeyPressesThisFrame() that resets all keys pressed this frame
   keyZPressedThisFrame = false;
+  keyTPressedThisFrame = false;
   gs.gd.mouseClickThisFrame = false;
 };
 
@@ -590,12 +617,21 @@ function doMobBehavior(timestamp) {
   doEnemyBehavior(timestamp);
 };
 
+function doStaticBehavior(timestamp) {
+  let statics = gs.lm.currentStatics;
+  for (let i = 0; i < statics.length; i++) {
+    // if item has a doBehavior, do it
+  }
+};
+
 function doPlayerBehavior(timestamp) {
   if (!firstFrame && gs.gd.currentScene === "gameLevel") {
-    gs.lm.player.move();
-    gs.lm.player.loadout.weapons[0].checkToStartReload(timestamp);
-    gs.lm.player.loadout.weapons[0].checkToCompleteReload(timestamp);
-    gs.lm.player.checkFire(timestamp);
+    let player = gs.lm.player;
+    //console.log(`player.loadout.weapons[0].name: ${player.loadout.weapons[0].name}`);
+    player.move();
+    player.loadout.weapons[0].checkToStartReload(timestamp);
+    player.loadout.weapons[0].checkToCompleteReload(timestamp);
+    player.checkFire(timestamp);
     
     keyRPressedThisFrame = false;
   }
@@ -667,6 +703,7 @@ function draw() {
 
   if (loopRunning) {
     drawMobileObjects();
+    drawStaticObjects();
     drawProjectiles();
   };
 
@@ -684,7 +721,7 @@ function drawBackgroundArt(level) {
   let tileWidth = level.tileSet.ground1.width;
   let tileHeight = level.tileSet.ground1.height;
 
-  let tilesDrawn = 0;
+  //let tilesDrawn = 0;
 
   for (let i = 0; i < tileMap.length; i++) {
     for (let j = 0; j < tileMap[i].length; j++) {
@@ -707,7 +744,7 @@ function drawBackgroundArt(level) {
         }
 
         cu.drawImage(tileImg, drawOriginX, drawOriginY, tileWidth, tileHeight);
-        tilesDrawn++;
+        //tilesDrawn++;
       }
     }
   }
@@ -718,6 +755,29 @@ function drawUIArt() {
   for (let i = 0; i < gs.gd.UICS.length; i++) { // For each UI section to be displayed
     for (let j = 0; j < gs.gd.UICS[i].elements.length; j++) { // For each element in the section to be displayed
       let element = gs.gd.UICS[i].elements[j];
+
+      if (element.name === 'MEDU Status Display') {
+        // Display health (structure/armor) status
+        let player = gs.lm.player;
+        if (player.condition.structure >= player.maxStructure*0.6) {
+          cu.fillStyle = 'green';
+        } else if (player.condition.structure >= player.maxStructure*0.3) {
+          cu.fillStyle = 'yellow';
+        } else if (player.condition.structure < player.maxStructure*0.3) {
+          cu.fillStyle = 'red';
+        }
+
+        let playerHealthPercent = player.condition.structure/player.maxStructure;
+        //cu.fillRect(102, 284, 120*playerHealthPercent, 15);
+        cu.fillRect(102 + (120*(1-playerHealthPercent)), 284, 120*playerHealthPercent, 15);
+
+        cm.font = '18px Helvetica'
+        cm.fillStyle = 'black';
+        cm.fillText(player.condition.structure, 285, 588);
+        cm.fillText('/', 320, 588);
+        cm.fillText(player.maxStructure, 330, 588);
+      }
+
       cu.drawImage(element.img, element.uOrigin[0], element.uOrigin[1], element.uWidth, element.uHeight); // Draw the UI element
     }
   }
@@ -751,37 +811,23 @@ function drawUIArt() {
     
     // Display ammo/reload status
     // *** Needs loop for loadouts with multiple weapons
+    //console.log(`player: ${player}`);
+    //console.log(`player.loadout: ${player.loadout}`);
+    //console.log(`player.loadout.weapons: ${player.loadout.weapons}`);
+    //console.log(`player.loadout.weapons[0]: ${player.loadout.weapons[0]}`);
     let weapon = player.loadout.weapons[0];
     cu.fillStyle = 'white';
     if (weapon.currentShotsInMag > 0) {
-      cu.fillRect(192, 11, 36*(weapon.currentShotsInMag/weapon.shotsPerMag), 5);
+      cu.fillRect(400, 57, 48*(weapon.currentShotsInMag/weapon.shotsPerMag), 10);
     } else if (weapon.currentShotsInMag === 0) {
-      cu.fillRect(192, 11, 36*(weapon.tslmr/(weapon.magReload*1000)), 5);
+      cu.fillRect(400, 57, 48*(weapon.tslmr/(weapon.magReload*1000)), 10);
     }
     cm.font = '24px Helvetica'
     cm.fillStyle = 'black';
-    cm.fillText(player.loadout.weapons[0].currentShotsInMag, 795, 62);
-    cm.fillText('/', 835, 62);
-    cm.fillText(player.loadout.weapons[0].shotsPerMag, 855, 62);
-    cm.fillText(player.loadout.weapons[0].name, 800, 30);
-    
-    // Display health (structure/armor) status
-    if (player.condition.structure >= player.maxStructure*0.6) {
-      cu.fillStyle = 'green';
-    } else if (player.condition.structure >= player.maxStructure*0.3) {
-      cu.fillStyle = 'yellow';
-    } else if (player.condition.structure < player.maxStructure*0.3) {
-      cu.fillStyle = 'red';
-    }
-    cu.fillRect(54, 144, 55*(player.condition.structure/player.maxStructure), 4);
-    
-    cm.font = '18px Helvetica'
-    cm.fillStyle = 'black';
-    cm.fillText(player.condition.structure, 285, 588);
-    cm.fillText('/', 320, 588);
-    cm.fillText(player.maxStructure, 330, 588);
-    
-    
+    cm.fillText(player.loadout.weapons[0].name, 800, 96);
+    cm.fillText(player.loadout.weapons[0].currentShotsInMag, 800, 132);
+    cm.fillText('/', 840, 132);
+    cm.fillText(player.loadout.weapons[0].shotsPerMag, 860, 132);
   }
   
   // Decide whether to draw a cursor or crosshair, then draw it
@@ -984,6 +1030,7 @@ function drawMobileObjects() {
     } 
 
     if (mob.name === 'player') {
+      //console.log(`player.position: [x:${mob.position.x}, y: ${mob.position.y}]`);
       cu.translate(mob.position.x - gs.lm.cameraPosition.x + cameraOffset.x, mob.position.y - gs.lm.cameraPosition.y + cameraOffset.y); // Translate canvas origin to image's center
       cu.rotate(degreesToRadians(rotationDegrees)); // Rotate canvas around the image's center
       cu.drawImage(mob.img, 0-(mob.width/2), 0-(mob.height/2), mob.width, mob.height); // Draw the main mob sprite
@@ -1079,6 +1126,43 @@ function drawMobileObjects() {
   }
 };
 
+function drawStaticObjects() {
+  // Draw each object in the currentStatics list of objects
+  for (let i = 0; i < gs.lm.currentStatics.length; i++) {
+    let obj = gs.lm.currentStatics[i];
+    let rotationDegrees = 0;
+
+    cu.translate(Math.floor(obj.position.x - gs.lm.cameraPosition.x + cameraOffset.x), Math.floor(obj.position.y - gs.lm.cameraPosition.y + cameraOffset.y)); // Translate canvas origin to image's center
+    cu.rotate(degreesToRadians(rotationDegrees)); // Rotate canvas around the image's center
+    cu.drawImage(obj.img, Math.floor(0-(obj.width/2)), Math.floor(0-(obj.height/2)), obj.width, obj.height); // Draw the main obj sprite
+    cu.rotate(-degreesToRadians(rotationDegrees)); // Reset the rotation
+    cu.translate(-(Math.floor(obj.position.x - gs.lm.cameraPosition.x + cameraOffset.x)), -(Math.floor(obj.position.y - gs.lm.cameraPosition.y + cameraOffset.y))); // Reset the translation
+
+    if (obj.loadout) {
+      for (let j = 0; j < obj.loadout.weapons.length; j++) {
+        let attachment = obj.loadout.weapons[j];
+        let mountOffset = {x: obj.weaponAttachmentPoints[j].x, y: obj.weaponAttachmentPoints[j].y};
+        let corOffset = {x: attachment.centerOfRotation.x, y: attachment.centerOfRotation.y};
+        
+        // V4, WORKING! Weapon center of rotation properly attaches to chassis mount point
+        cu.translate(obj.position.x - gs.lm.cameraPosition.x + cameraOffset.x + mountOffset.x, 
+                     obj.position.y - gs.lm.cameraPosition.y + cameraOffset.y + mountOffset.y); // Translate canvas origin to image's center
+        cu.rotate(attachment.angle); // Rotate canvas around the image's center
+        cu.drawImage(attachment.img, 
+                    - corOffset.x,
+                    - corOffset.y,
+                    attachment.width, 
+                    attachment.height
+                    ); // Draw the obj attachment
+        cu.rotate(-attachment.angle); // Reset the rotation
+        cu.translate(-(obj.position.x - gs.lm.cameraPosition.x + cameraOffset.x + mountOffset.x), 
+                    -(obj.position.y - gs.lm.cameraPosition.y + cameraOffset.y + mountOffset.y)); // Reset the translation
+        
+      }
+    }
+  }
+};
+
 function drawProjectiles() {
   for (let i = 0; i < gs.lm.currentProjectiles.length; i++) {
     let projectile = gs.lm.currentProjectiles[i];
@@ -1123,7 +1207,7 @@ function checkCollision(obj1, obj2) {
     }
   } 
   //console.log(detectCollision);
-  console.log(`CC ${obj1.name}/${obj2.name}: ${detectCollision}`);
+  //console.log(`CC ${obj1.name}/${obj2.name}: ${detectCollision}`);
   return detectCollision;
 };
 
@@ -1168,8 +1252,8 @@ function directionToRadians(direction) {
 
 function canvasToLevelCoords(canvasCoords) { 
   let levelCoords = {x:0, y:0};
-  levelCoords.x = gs.lm.cameraPosition.x - cameraOffset.x + (canvasCoords.x / upscaleFactor);
-  levelCoords.y = gs.lm.cameraPosition.y - cameraOffset.y + (canvasCoords.y / upscaleFactor);
+  levelCoords.x = Math.ceil(gs.lm.cameraPosition.x - cameraOffset.x + (canvasCoords.x / upscaleFactor));
+  levelCoords.y = Math.ceil(gs.lm.cameraPosition.y - cameraOffset.y + (canvasCoords.y / upscaleFactor));
   return levelCoords;
 };
 
@@ -1367,6 +1451,8 @@ let keydownR = false;
 let keyRPressedThisFrame = false;
 let keydownZ = false;
 let keyZPressedThisFrame = false;
+let keydownT = false;
+let keyTPressedThisFrame = false;
 
 function keyDownHandler(key) {
   if (key.code === 'KeyM') { // Scroll reset testing
@@ -1408,6 +1494,10 @@ function keyDownHandler(key) {
       keydownZ = true;
       keyZPressedThisFrame = true;
     }
+    if (key.code === 'KeyT') {
+      keydownT = true;
+      keyTPressedThisFrame = true;
+    }
   }
   
 };
@@ -1430,6 +1520,9 @@ function keyUpHandler(key) {
   }
   if (key.keyCode === 'KeyZ') {
     keydownZ = false;
+  }
+  if (key.keyCode === 'KeyT') {
+    keydownT = false;
   }
   
       

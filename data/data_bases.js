@@ -104,13 +104,14 @@ class Loadout {
 }
 
 class Base {
-  constructor(name, weight, structure, armor, engine, battery, storage, weapons, utilities, nameImgSrc) {
+  constructor(name, weight, structure, armor, engine, battery, storage, weapons, utilities, nameImgSrc, objImgSrc, ) {
 
     this.name = name;
     this.wt = weight.max; // Weight
     this.type = 'Chassis';
     this.class = 'Wheeled';
     this.nameImgSrc = nameImgSrc;
+    this.objImgSrc = objImgSrc;
 
     this.weight = {
       max: weight.max,
@@ -167,8 +168,8 @@ class Base {
 // ------------------------------------------------------------
 
 class ChassisWheeled extends Base {
-  constructor(name, weight, structure, armor, engine, battery, storage, weapons, utilities, nameImgSrc) {
-    super(name, weight, structure, armor, engine, battery, storage, weapons, utilities, nameImgSrc);
+  constructor(name, weight, structure, armor, engine, battery, storage, weapons, utilities, nameImgSrc, objImgSrc) {
+    super(name, weight, structure, armor, engine, battery, storage, weapons, utilities, nameImgSrc, objImgSrc);
     this.type = 'chassis';
     this.class = 'wheeled';
 
@@ -196,13 +197,15 @@ const whl200 = new ChassisWheeled(
 );
 const whl200stock = new Loadout('200-WHL: Stock', whl200, 40, 40, 50, 15, 15, [new MCG30(), false, null], [new BCT10(), false, null]);
 
+
+
 // ------------------------------------------------------------
 //        TRACKED CHASSIS CLASS, BASE ITEMS AND LOADOUTS
 // ------------------------------------------------------------
 
 class ChassisTracked extends Base {
-  constructor(name, weight, structure, armor, engine, battery, storage, weapons, utilities, nameImgSrc) {
-    super(name, weight, structure, armor, engine, battery, storage, weapons, utilities, nameImgSrc);
+  constructor(name, weight, structure, armor, engine, battery, storage, weapons, utilities, nameImgSrc, objImgSrc) {
+    super(name, weight, structure, armor, engine, battery, storage, weapons, utilities, nameImgSrc, objImgSrc);
     this.type = 'chassis';
     this.class = 'tracked';
 
@@ -230,22 +233,60 @@ const trk300 = new ChassisTracked(
 );
 const trk300stock = new Loadout(`300-TRK: Stock`, trk300, 50, 60, 50, 20, 20, [new CAN60(), new MCG20(), false], [new BCT20(), false, null]); 
 
+
+
 // ------------------------------------------------------------
 //      STATIC WEAPON FRAME CLASS, BASE ITEMS AND LOADOUTS
 // ------------------------------------------------------------
 
-class StaticWeaponFrame extends Base {
-  constructor(name, weight, structure, armor, engine, battery, storage, weapons, utilities, nameImgSrc) {
-    super(name, weight, structure, armor, engine, battery, storage, weapons, utilities, nameImgSrc);
+class StaticWeaponFrame {
+  constructor() {
+    //super(structure, armor, engine, battery, storage, weapons, utilities);
     this.type = 'building';
     this.class = 'weaponframe';
 
     this.iconSrc = 'resources/images/ui_480x320/Icons/Icon_Building_WeaponFrame_GREEN_16x16.png';
     this.iconSrcPrimary = 'resources/images/ui_480x320/Icons/Icon_Building_WeaponFrame_GREEN_16x16.png';
-    this.nameImgSrc = nameImgSrc;
   }
 }
 
+class SWF40 extends StaticWeaponFrame {
+  constructor(position, id) {
+    super();
+    this.name = 'Building: 40-SWF'; 
+    this.position = position;
+    this.id = id;
+
+    this.img = new Image();
+    this.img.src = 'resources/images/sprites/buildings/Turret_Base_4_32x32.png';
+    this.width = 32;
+    this.height = 32;
+
+    this.nameImgSrc = '';
+    this.objImgSrc = '';
+
+    this.weight =    {max: 40, min: 0, current: 0}; // Weight
+    this.structure = {max: 20, min: 5, current: 0}; // Structure
+    this.armor =     {max: 20, min: 0, current: 0}; // Armor
+    this.engine =    {max:  0, min: 0, current: 0}; // Engine
+    this.battery =   {max:  0, min: 0, current: 0}; // Battery
+    this.storage =   {max:  0, min: 0, current: 0}; // Storage
+
+
+    this.weapons =   {mount1: {maxWeight: 20, current: null}, // Weapon mount 1
+                      mount2: {maxWeight:  0, current: null}, // Weapon mount 2
+                      mount3: {maxWeight:  0, current: null}, // Weapon mount 3
+                     }; 
+    this.utilities = {mount1: {maxWeight:  0, current: null}, // Utility mount 1
+                      mount2: {maxWeight:  0, current: null}, // Utility mount 2
+                      mount3: {maxWeight:  0, current: null}, // Utility mount 3
+                     };
+    this.nameImgSrc = 'resources/images/ui_480x320/Text/BuildingName_40-SWF_53x18.png'; // Name image for display in menus
+    this.objImgSrc = 'resources/images/sprites/buildings/Turret_Base_4_32x32.png'; // Object image for display in levels
+  }
+}
+
+/*
 const swf40 = new StaticWeaponFrame(
   'Building: 40-SWF', 
   {max: 40},                 // Weight
@@ -260,9 +301,12 @@ const swf40 = new StaticWeaponFrame(
   {mount1: {maxWeight:  0},  // Utility mount 1
    mount2: {maxWeight:  0},  // Utility mount 2
    mount3: {maxWeight:  0}}, // Utility mount 3
-   'resources/images/ui_480x320/Text/BuildingName_40-SWF_53x18.png'
+   'resources/images/ui_480x320/Text/BuildingName_40-SWF_53x18.png', // Name image for display in menus
+   'resources/images/sprites/buildings/Turret_Base_4_32x32.png', // Object image for display in levels
 );
-const swf40stock = new Loadout('40-SWF: Stock', swf40, 10, 10, 0, 0, 0, [new MCG20(), null, null], [null, null, null]); 
+*/
+
+const swf40stock = new Loadout('40-SWF: Stock', new SWF40(null, null), 10, 20, 0, 0, 0, [new MCG10(), null, null], [null, null, null]); 
 
 const swf100 = new StaticWeaponFrame(
   'Building: 100-SWF', 

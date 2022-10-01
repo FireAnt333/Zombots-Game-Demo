@@ -11,12 +11,14 @@ TO DO:
 
 class ZombotBasic {
   constructor (position, id) {
-    this.imgSrc1 = 'resources/images/sprites/enemies/Zombot_8x8.png';
-    this.imgSrc2 = 'resources/images/sprites/enemies/Zombot_8x8_Rotated.png';
+    //this.imgSrc1 = 'resources/images/sprites/enemies/Zombot_8x8.png';
+    //this.imgSrc2 = 'resources/images/sprites/enemies/Zombot_8x8_Rotated.png';
+    this.imgSrc1 = 'resources/images/sprites/enemies/Zombot_2_16x16.png';
+    this.imgSrc2 = 'resources/images/sprites/enemies/Zombot_2_Rotated_16x16.png';
     this.img = new Image();
     this.img.src = this.imgSrc1;
-    this.width = 8;
-    this.height = 8;
+    this.width = 16;
+    this.height = 16;
     this.name = 'zombot basic';
     this.team = 'Zombots';
     this.id = gs.gd.objIDIndex;
@@ -28,8 +30,8 @@ class ZombotBasic {
     this.path = undefined;
     
     this.speed = 0.35;
-    this.hitRange = 4; // Hitbox radius
-    this.attackRange = 5;
+    this.hitRange = 8; // Receiving hits; equal to hitbox radius
+    this.attackRange = 10;
     this.damage = 10;
     
     this.isReadyToAttack = true;
