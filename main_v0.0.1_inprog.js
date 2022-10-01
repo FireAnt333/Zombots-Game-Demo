@@ -3,7 +3,7 @@ ZOMBOTS DEMO V0.0.1 - In Progress
 
 // Last edited: 09/30/22
 
-// Git local repository directory path: cd Desktop/'Ideas and Plans'/Career/'Coding Projects'/'Personal Projects'/Zombots/'Zombots Canvas Project'
+// Git local repository directory path: cd 'Coding Projects'/'Personal Projects'/Zombots/'Zombots Canvas Project'
 1) git add .
 2) git commit -m ""
 3) git push -u origin master

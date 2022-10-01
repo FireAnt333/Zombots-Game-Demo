@@ -9,7 +9,7 @@ TO DO:
 
 */
 
-
+// Comment to show it's edited
 
 /* WEAPON PROPERTIES AND EXPECTED INPUTS
 // Properties that all weapons have
